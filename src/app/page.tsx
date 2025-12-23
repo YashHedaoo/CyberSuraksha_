@@ -12,6 +12,7 @@ import { useLanguage } from "@/context/language-context"
 import { useSeniorMode } from "@/context/senior-mode-context"
 import { useDisguise } from "@/context/disguise-context"
 import { CalculatorDisguise } from "@/components/calculator-disguise"
+import { CyberHero } from "@/components/cyber-hero"
 
 // Dictionary for supported languages
 const translations = {
@@ -427,13 +428,12 @@ export default function HomePage() {
       <Header />
       {/* ... keeping original content */}
 
+
+
       {/* Hero Section */}
       <section className="relative py-24 px-4 sm:px-8 lg:px-10 z-10">
         <div className="container mx-auto max-w-6xl">
-          <div className="mx-auto max-w-3xl glassy rounded-3xl p-10 text-center space-y-8">
-            <div className="absolute top-4 right-4 z-50">
-              <PanicFreeze />
-            </div>
+          <CyberHero>
             <h1 className="text-5xl sm:text-6xl lg:text-7xl font-black leading-tight text-foreground drop-shadow-md">
               {t.secureReporting}
               <span className="block bg-gradient-to-r from-blue-700 to-blue-400 bg-clip-text text-transparent animate-gradient-x">
@@ -451,7 +451,7 @@ export default function HomePage() {
                 <Link href="/police/signin">{t.policeLogin}</Link>
               </Button>
             </div>
-          </div>
+          </CyberHero>
         </div>
       </section>
       {/* Features Section */}

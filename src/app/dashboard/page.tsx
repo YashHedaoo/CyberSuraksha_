@@ -14,6 +14,7 @@ import { SafetyChecklist } from "@/components/safety-checklist"
 import { ZeroFirCard } from "@/components/zero-fir-card"
 
 import { LiveAlertTicker } from "@/components/live-alert-ticker"
+import { CyberLicenseWidget } from "@/components/cyber-license-widget"
 
 export default function DashboardPage() {
   const { user } = useAuth()
@@ -178,17 +179,8 @@ export default function DashboardPage() {
           </CardContent>
         </Card>
 
-        {/* New Widget: Safety Score */}
-        <Card className="glassy border-l-4 border-l-emerald-500 hover:translate-y-[-2px] transition-transform bg-emerald-500/5">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">{t.widgets?.safetyScore || "Safety Score"}</CardTitle>
-            <Shield className="h-4 w-4 text-emerald-500" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-emerald-600">92/100</div>
-            <p className="text-xs text-muted-foreground mt-1">{t.widgets?.safetyLevel || "Safe"}</p>
-          </CardContent>
-        </Card>
+        {/* Gamification Widget: Cyber License */}
+        <CyberLicenseWidget />
 
         {/* New Widget: Report Download */}
         <Card className="glassy border-l-4 border-l-indigo-500 hover:translate-y-[-2px] transition-transform cursor-pointer hover:bg-accent/50 group" onClick={() => alert("Downloading Monthly Digest...")}>
