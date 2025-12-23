@@ -15,12 +15,14 @@ export default function SignInPage() {
   const { t } = useLanguage()
   const [loading, setLoading] = useState(false)
 
-  const handleDemoLogin = async () => {
+  const [email, setEmail] = useState("")
+  const [password, setPassword] = useState("")
+
+  const handleLogin = async (e: React.FormEvent) => {
+    e.preventDefault()
     setLoading(true)
-    // Simulate a small delay for better UX
-    setTimeout(async () => {
-      await login("citizen")
-    }, 1000)
+    await login("citizen", email, password)
+    setLoading(false)
   }
 
   return (
@@ -36,38 +38,49 @@ export default function SignInPage() {
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
-          <div className="space-y-2">
-            <div className="bg-yellow-50 dark:bg-yellow-900/20 p-3 rounded-lg border border-yellow-200 dark:border-yellow-800 text-sm text-yellow-800 dark:text-yellow-200 flex items-start gap-2">
-              <AlertCircle className="h-5 w-5 shrink-0" />
-              <p>
-                {t.auth.demoMode}
-              </p>
+          <form onSubmit={handleLogin} className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="email">{t.auth.email}</Label>
+              <Input
+                id="email"
+                placeholder="name@example.com"
+                type="email"
+                required
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+              />
             </div>
-          </div>
+            <div className="space-y-2">
+              <Label htmlFor="password">{t.auth.password}</Label>
+              <Input
+                id="password"
+                type="password"
+                placeholder="••••••••"
+                required
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+              />
+            </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="email">{t.auth.email}</Label>
-            <Input id="email" placeholder="rahul@example.com" disabled value="rahul@example.com" />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="password">{t.auth.password}</Label>
-            <Input id="password" type="password" disabled value="password" />
-          </div>
+            <Button
+              type="submit"
+              className="w-full h-11 text-lg font-medium shadow-lg hover:shadow-primary/25 transition-all"
+              disabled={loading}
+            >
+              {loading ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  {t.auth.authenticating}
+                </>
+              ) : (
+                t.auth.loginCitizen
+              )}
+            </Button>
 
-          <Button
-            className="w-full h-11 text-lg font-medium shadow-lg hover:shadow-primary/25 transition-all"
-            onClick={handleDemoLogin}
-            disabled={loading}
-          >
-            {loading ? (
-              <>
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                {t.auth.authenticating}
-              </>
-            ) : (
-              t.auth.loginCitizen
-            )}
-          </Button>
+            <p className="text-xs text-center text-muted-foreground mt-2">
+              Demo Credentials: <span className="font-mono bg-muted px-1 rounded">rahul@example.com</span> / <span className="font-mono bg-muted px-1 rounded">password</span>
+            </p>
+          </form>
         </CardContent>
         <CardFooter className="flex flex-col space-y-4 text-center text-sm text-muted-foreground bg-slate-50 dark:bg-slate-900/50 p-6 rounded-b-xl border-t">
           <div className="w-full space-y-3">
@@ -83,7 +96,7 @@ export default function SignInPage() {
                 </Link>
               </Button>
               <Button variant="outline" asChild className="h-10 border-orange-200 hover:bg-orange-50 hover:text-orange-700 dark:border-orange-900 dark:hover:bg-orange-900/20">
-                <Link href="/vle/dashboard">
+                <Link href="/vle/signin">
                   <Lock className="mr-2 h-4 w-4" /> VLE / Sarpanch
                 </Link>
               </Button>

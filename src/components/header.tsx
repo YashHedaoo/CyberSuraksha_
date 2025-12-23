@@ -66,7 +66,10 @@ export function Header() {
 
             {/* Notification Bell */}
             {!isSeniorMode && (
-              <div className="relative cursor-pointer hover:bg-muted/50 p-2 rounded-full transition-colors group">
+              <div
+                onClick={() => router.push("/dashboard/my-complaints")} // Or open a real notification sheet
+                className="relative cursor-pointer hover:bg-muted/50 p-2 rounded-full transition-colors group"
+              >
                 <div className="absolute top-2 right-2 h-2 w-2 bg-red-500 rounded-full animate-pulse ring-2 ring-background" />
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
