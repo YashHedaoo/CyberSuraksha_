@@ -54,6 +54,10 @@ export function LanguageToggle() {
                     ಕನ್ನಡ (Kannada)
                     {language === "kn" && <Check className="ml-auto h-4 w-4" />}
                 </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => setLanguage("bn")}>
+                    বাংলা (Bengali)
+                    {language === "bn" && <Check className="ml-auto h-4 w-4" />}
+                </DropdownMenuItem>
             </DropdownMenuContent>
         </DropdownMenu>
     )

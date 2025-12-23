@@ -136,8 +136,8 @@ export default function AIAssistantPage() {
                   </div>
                 )}
                 <div className={`max-w-[85%] rounded-2xl p-4 shadow-sm ${msg.role === 'user'
-                    ? 'bg-primary text-primary-foreground rounded-br-none'
-                    : 'bg-card border rounded-tl-none ring-1 ring-slate-200 dark:ring-slate-800'
+                  ? 'bg-primary text-primary-foreground rounded-br-none'
+                  : 'bg-card border rounded-tl-none ring-1 ring-slate-200 dark:ring-slate-800'
                   }`}>
                   {renderMessageContent(msg)}
                 </div>
@@ -174,8 +174,8 @@ export default function AIAssistantPage() {
               <div className="text-[10px] text-muted-foreground flex items-center gap-1">
                 <Shield className="h-3 w-3" /> Secure & Private
               </div>
-              <div className="scale-90 origin-right">
-                <VoiceInput onTranscript={(text) => setInput(prev => prev + " " + text)} />
+              <div className="scale-100">
+                <VoiceInput variant="compact" onTranscript={(text) => setInput(prev => prev + " " + text)} />
               </div>
             </div>
           </div>

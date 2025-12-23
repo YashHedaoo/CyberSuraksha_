@@ -4,11 +4,14 @@ import { useState, useEffect } from "react"
 import { Header } from "@/components/header"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Shield, Lock, FileText, BarChart, Users, ArrowRight, ShieldAlert, Cpu, Globe, CheckCircle, Siren, MessageSquare, Clock, Phone } from "lucide-react"
+import { Shield, Lock, FileText, BarChart, Users, ArrowRight, ShieldAlert, Cpu, Globe, CheckCircle, Siren, MessageSquare, Clock, Phone, XCircle } from "lucide-react"
 import Link from "next/link"
+import { PanicFreeze } from "@/components/panic-freeze"
 import { Language } from "@/lib/translations"
 import { useLanguage } from "@/context/language-context"
 import { useSeniorMode } from "@/context/senior-mode-context"
+import { useDisguise } from "@/context/disguise-context"
+import { CalculatorDisguise } from "@/components/calculator-disguise"
 
 // Dictionary for supported languages
 const translations = {
@@ -113,7 +116,7 @@ const translations = {
     featuresTitle: "CyberSuraksha का निवडा?",
     featuresSubtitle: "सुरक्षा, प्रवेश आणि वापरकर्ता अनुभव लक्षात घेऊन बांधलेले.",
     secure: "सुरक्षित आणि गोपनीय",
-    secureDesc: "एंड-टू-एंड एनक्रिप्शनमुळे तुमचे अहवाल गोपनीय आणि सुरक्षित राहतात.",
+    secureDesc: "एंड-टू-ఎಂಡ್ एनक्रिप्शनमुळे तुमचे अहवाल गोपनीय आणि सुरक्षित राहतात.",
     easy: "सोप्या सुविधा",
     easyDesc: "व्हॉइस रेकॉर्डिंग, फोटो अपलोड आणि चरणानुसार मार्गदर्शन.",
     tracking: "रीअल-टाइम ट्रॅकिंग",
@@ -254,7 +257,7 @@ const translations = {
     secureDesc: "এন্ড-টু-এন্ড এনক্রিপশনের মাধ্যমে আপনার রিপোর্টগুলি গোপনীয় এবং নিরাপদ থাকে।",
     easy: "সহজ রিপোর্টিং",
     easyDesc: "ভয়েস রেকর্ডিং, ছবি আপলোড এবং ধাপে ধাপে নির্দেশনার মাধ্যমে সহজ ফর্ম।",
-    tracking: "রিয়েল-టైম ট্র্যাকিং",
+    tracking: "রিয়েল-টাইম ট্র্যাকিং",
     trackingDesc: "আপনার অভিযোগের অবস্থা ট্র্যাক করুন এবং আপডেট পান।",
     policeDashboard: "পুলিশ ড্যাশবোর্ড",
     policeDashboardDesc: "রিপোর্ট পরিচালনা ও সাড়া দেওয়ার জন্য আইন প্রয়োগকারীদের জন্য পৃথক ইন্টারফেস।",
@@ -299,7 +302,7 @@ const translations = {
     secure: "ಭದ್ರ ಮತ್ತು ಗೌಪ್ಯ",
     secureDesc: "ಎಂಡ್-ಟು-ಎಂಡ್ ಎನ್ಕ್ರಿಪ್ಶನ್ ನಿಮ್ಮ ವರದಿಗಳನ್ನು ಗೌಪ್ಯವಾಗಿರಿಸುತ್ತದೆ.",
     easy: "ಸರಳ ವರದಿ",
-    easyDesc: "ಧ್ವನಿ ದಾಖಲೆ, ಫೋಟೋ ಅಪ್‌ಲೋಡ್ ಮತ್ತು ಹಂತ ಹಂತವಾಗಿ ಮಾರ್ಗದರ್ಶನ.",
+    easyDesc: "ಧ್ವನಿ ದಾಖಲೆ, ಫೋಟೋ ಅಪ್‌ಲೋಡ್ ಮತ್ತು ಹಂತ ಹಂತವಾಗಿ ಮಾರ್ಗ್‌ದರ್ಶನ.",
     tracking: "ರಿಯಲ್-ಟೈಮ್ ಟ್ರ್ಯಾಕಿಂಗ್",
     trackingDesc: "ನಿಮ್ಮ ದೂರಿನ ಸ್ಥಿತಿಯನ್ನು ಟ್ರ್ಯಾಕ್ ಮಾಡಿ ಮತ್ತು ನವೀಕರಣಗಳನ್ನು ಪಡೆಯಿರಿ.",
     policeDashboard: "ಪೊಲೀಸ್ ಡ್ಯಾಶ್‌ಬೋರ್ಡ್",
@@ -349,7 +352,13 @@ const languageOptions = [
 
 export default function HomePage() {
   const { language, setLanguage, t: globalT } = useLanguage();
-  const { isSeniorMode } = useSeniorMode();
+  const { isSeniorMode, toggleSeniorMode } = useSeniorMode();
+  const { isDisguised } = useDisguise();
+
+  // Shadow Mode Interception
+  if (isDisguised) {
+    return <CalculatorDisguise />
+  }
 
   // Use local translations for landing page specific content
   // Fallback to English if the current global language doesn't have a translation key here
@@ -361,6 +370,11 @@ export default function HomePage() {
         <Header />
 
         <main className="container mx-auto px-4 py-8 space-y-8">
+          <div className="flex justify-end">
+            <Button onClick={toggleSeniorMode} variant="ghost" className="text-sm text-gray-500 flex items-center gap-1 hover:text-red-500">
+              <XCircle className="h-4 w-4" /> Exit Senior Mode
+            </Button>
+          </div>
           <div className="text-center space-y-4 mb-8">
             <h1 className="text-4xl font-black">{globalT?.seniorMode?.title || "SIMPLE MODE ACTIVATED"}</h1>
             <p className="text-xl">{globalT?.seniorMode?.subtitle || "Easier interface"}</p>
@@ -412,21 +426,14 @@ export default function HomePage() {
 
       <Header />
       {/* ... keeping original content */}
-      <div className="flex justify-end px-6 pt-4 relative z-10">
-        <select
-          value={language}
-          onChange={e => setLanguage(e.target.value as Language)}
-          className="border px-2 py-1 rounded bg-card text-card-foreground text-sm ring-1 ring-border"
-        >
-          {languageOptions.map(l => (
-            <option value={l.code} key={l.code}>{l.label}</option>
-          ))}
-        </select>
-      </div>
+
       {/* Hero Section */}
       <section className="relative py-24 px-4 sm:px-8 lg:px-10 z-10">
         <div className="container mx-auto max-w-6xl">
           <div className="mx-auto max-w-3xl glassy rounded-3xl p-10 text-center space-y-8">
+            <div className="absolute top-4 right-4 z-50">
+              <PanicFreeze />
+            </div>
             <h1 className="text-5xl sm:text-6xl lg:text-7xl font-black leading-tight text-foreground drop-shadow-md">
               {t.secureReporting}
               <span className="block bg-gradient-to-r from-blue-700 to-blue-400 bg-clip-text text-transparent animate-gradient-x">
@@ -437,10 +444,10 @@ export default function HomePage() {
               {t.heroText}
             </p>
             <div className="flex flex-col sm:flex-row gap-6 justify-center items-center pt-6">
-              <Button asChild variant="outline" size="lg" className="h-12 px-8 text-lg">
+              <Button asChild variant="outline" size="lg" className="h-12 px-8 text-lg border-2 hover:bg-primary hover:text-white hover:border-primary transition-all duration-300">
                 <Link href="/signin">{t.userLogin}</Link>
               </Button>
-              <Button asChild variant="outline" size="lg" className="h-12 px-8 text-lg">
+              <Button asChild variant="outline" size="lg" className="h-12 px-8 text-lg border-2 hover:bg-blue-800 hover:text-white hover:border-blue-800 transition-all duration-300">
                 <Link href="/police/signin">{t.policeLogin}</Link>
               </Button>
             </div>
@@ -531,7 +538,7 @@ export default function HomePage() {
                   <p className="text-muted-foreground mb-3">
                     Report urgent incidents anonymously without logging in.
                   </p>
-                  <Button asChild className="w-full bg-destructive hover:bg-destructive/90 text-destructive-foreground shadow-lg shadow-destructive/20">
+                  <Button asChild className="w-full bg-destructive hover:bg-red-700 hover:scale-105 active:scale-95 text-destructive-foreground shadow-lg shadow-destructive/20 transition-all duration-300">
                     <Link href="/emergency-report">{t.startEmergency}</Link>
                   </Button>
                 </div>

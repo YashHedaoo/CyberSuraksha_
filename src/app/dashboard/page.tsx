@@ -13,6 +13,8 @@ import PanicButton from "@/components/panic-button"
 import { SafetyChecklist } from "@/components/safety-checklist"
 import { ZeroFirCard } from "@/components/zero-fir-card"
 
+import { LiveAlertTicker } from "@/components/live-alert-ticker"
+
 export default function DashboardPage() {
   const { user } = useAuth()
   const { t } = useLanguage()

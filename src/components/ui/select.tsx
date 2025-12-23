@@ -22,7 +22,7 @@ function SelectTrigger({ className, children, ...props }: React.ComponentProps<t
     <SelectPrimitive.Trigger
       data-slot="select-trigger"
       className={cn(
-        "focus:border-primary focus:ring-4 focus:ring-primary/20 bg-white/60 dark:bg-gray-900/50 border border-gray-300 dark:border-gray-700 shadow-md flex h-11 min-w-[8rem] items-center justify-between whitespace-nowrap rounded-xl px-4 py-2 text-base font-semibold transition-all duration-200 outline-none hover:border-primary/40 hover:shadow-lg aria-invalid:border-red-500 disabled:cursor-not-allowed disabled:opacity-50",
+        "focus:border-primary focus:ring-4 focus:ring-primary/20 bg-white/60 dark:bg-gray-900/50 border border-gray-300 dark:border-gray-700 shadow-md flex h-11 min-w-[8rem] items-center justify-between whitespace-nowrap rounded-xl px-4 py-2 text-base text-gray-900 dark:text-gray-100 font-semibold transition-all duration-200 outline-none hover:border-primary/40 hover:shadow-lg aria-invalid:border-red-500 disabled:cursor-not-allowed disabled:opacity-50",
         className
       )}
       {...props}
@@ -64,7 +64,7 @@ function SelectContent({
         className={cn(
           "bg-white/80 dark:bg-gray-900/70 backdrop-blur-lg text-gray-900 dark:text-gray-100 border border-gray-200 dark:border-gray-700 rounded-xl shadow-xl animate-in slide-in-from-top px-2 py-2 z-50 max-h-96 min-w-[10rem] overflow-auto transition-all duration-200",
           position === "popper" &&
-            "data-[side=bottom]:translate-y-1 data-[side=left]:-translate-x-1 data-[side=right]:translate-x-1 data-[side=top]:-translate-y-1",
+          "data-[side=bottom]:translate-y-1 data-[side=left]:-translate-x-1 data-[side=right]:translate-x-1 data-[side=top]:-translate-y-1",
           className
         )}
         position={position}

@@ -156,7 +156,7 @@ export default function FileComplaintPage() {
     const recognition = new SpeechRecognition();
     recognition.lang = 'en-US'; // Default to English, could be made dynamic
     recognition.interimResults = false;
-    recognition.maxAlternatives = 1;
+    (recognition as any).maxAlternatives = 1;
 
     setIsRecording(true);
     recognition.start();

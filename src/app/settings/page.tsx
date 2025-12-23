@@ -3,14 +3,16 @@
 import { useLanguage } from "@/context/language-context"
 import { Language } from "@/lib/translations"
 import { useAuth } from "@/context/auth-context"
+import { useDisguise } from "@/context/disguise-context"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Label } from "@/components/ui/label"
 import { Button } from "@/components/ui/button"
-import { Moon, Sun, Monitor, Languages, LogOut } from "lucide-react"
+import { Moon, Sun, Monitor, Languages, LogOut, EyeOff } from "lucide-react"
 
 export default function SettingsPage() {
     const { language, setLanguage, t } = useLanguage()
     const { user, logout } = useAuth()
+    const { isDisguised, toggleDisguise } = useDisguise()
 
     return (
         <div className="max-w-4xl mx-auto space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
@@ -75,6 +77,30 @@ export default function SettingsPage() {
                             <Button variant="destructive" onClick={logout}>
                                 <LogOut className="mr-2 h-4 w-4" />
                                 {t.nav.logout}
+                            </Button>
+                        </div>
+                    </CardContent>
+                </Card>
+
+                {/* Privacy & Safety Tools */}
+                <Card className="glassy border-l-4 border-l-blue-600">
+                    <CardHeader>
+                        <CardTitle className="flex items-center gap-2">
+                            <Monitor className="h-5 w-5 text-blue-600" />
+                            Privacy & Disguise
+                        </CardTitle>
+                        <CardDescription>Advanced safety features for domestic privacy.</CardDescription>
+                    </CardHeader>
+                    <CardContent className="space-y-4">
+                        <div className="flex items-center justify-between p-4 bg-slate-100 dark:bg-slate-900 rounded-lg">
+                            <div className="space-y-1">
+                                <Label className="text-base font-semibold">Shadow Calculator Mode</Label>
+                                <p className="text-sm text-muted-foreground">
+                                    Disguise the entire app as a Calculator. Use PIN '100=' to unlock.
+                                </p>
+                            </div>
+                            <Button variant="outline" onClick={() => toggleDisguise(true)}>
+                                <EyeOff className="mr-2 h-4 w-4" /> Activate Now
                             </Button>
                         </div>
                     </CardContent>

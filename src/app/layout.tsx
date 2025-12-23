@@ -6,6 +6,7 @@ import { AuthProvider } from "@/context/auth-context"
 import { LanguageProvider } from "@/context/language-context"
 import { ThemeProvider } from "@/context/theme-context"
 import { SeniorModeProvider } from "@/context/senior-mode-context"
+import { DisguiseProvider } from "@/context/disguise-context"
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" })
 
@@ -22,12 +23,14 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={`${inter.variable} font-sans`}>
+      <body className={`${inter.variable} font-sans`} suppressHydrationWarning>
         <ThemeProvider>
           <LanguageProvider>
             <AuthProvider>
               <SeniorModeProvider>
-                {children}
+                <DisguiseProvider>
+                  {children}
+                </DisguiseProvider>
               </SeniorModeProvider>
             </AuthProvider>
           </LanguageProvider>

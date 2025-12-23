@@ -2,11 +2,25 @@
 
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { ShieldAlert, FileText, Smartphone, Users, Search, Phone, Video, Lock } from "lucide-react"
+import { ShieldAlert, FileText, Smartphone, Users, Search, Phone, Video, Lock, GraduationCap, HardDrive } from "lucide-react"
 import Link from "next/link"
 
 export default function ToolsIndexPage() {
     const tools = [
+        {
+            title: "Safety Vault",
+            desc: "Offline evidence storage with Duress Mode.",
+            href: "/tools/safety-vault",
+            icon: HardDrive,
+            color: "text-slate-600 bg-slate-200 dark:bg-slate-800 dark:text-slate-100"
+        },
+        {
+            title: "Phishing Dojo",
+            desc: "Gamified training to spot scams.",
+            href: "/tools/phishing-dojo",
+            icon: GraduationCap,
+            color: "text-yellow-600 bg-yellow-100"
+        },
         {
             title: "WhatsApp Bot Check",
             desc: "Forward suspicious messages to check links.",

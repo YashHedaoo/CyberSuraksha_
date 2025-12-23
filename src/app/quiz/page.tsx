@@ -1,168 +1,171 @@
 "use client"
 
 import { useState } from "react"
-import { BadgeCheck, Brain, ChevronRight, RefreshCw, Trophy } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
-import { Progress } from "@/components/ui/progress"
-// import Confetti from "react-confetti" // Ideally we would use this for celebration
+import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card"
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
+import { Label } from "@/components/ui/label"
+import { CheckCircle2, Award, Download, RefreshCcw } from "lucide-react"
+import { jsPDF } from "jspdf"
+import { Header } from "@/components/header"
 
 const QUESTIONS = [
     {
-        question: "You receive an SMS: 'Your Electricity will be cut in 2 hours. Call 98XXX'. What do you do?",
-        options: ["Call the number immediately", "Ignore it", "Check official bill/app", "Pay the amount requested"],
-        answer: 2,
-        explanation: "Scammers create urgency. Always verify using the official electricity board app or website."
+        id: 1,
+        question: "You receive an SMS: 'Electricity Bill Unpaid. Power will be cut tonight. Call 98xxx'. What do you do?",
+        options: [
+            { id: "a", text: "Call the number immediately in panic.", isCorrect: false },
+            { id: "b", text: "Ignore the SMS and check exact Status on official Electricity Board App.", isCorrect: true },
+            { id: "c", text: "Forward it to family members.", isCorrect: false }
+        ]
     },
     {
-        question: "A 'Police Officer' video calls you saying you are under 'Digital Arrest'. Is this real?",
-        options: ["Yes, I should hide", "No, 'Digital Arrest' is a SCAM", "Maybe, I should pay bail", "Yes, I should share Aadhaar"],
-        answer: 1,
-        explanation: "Indian Law does NOT have 'Digital Arrest'. Police never ask for money or video call interrogation."
+        id: 2,
+        question: "A 'Police Officer' video calls you on WhatsApp saying you are under 'Digital Arrest'.",
+        options: [
+            { id: "a", text: "Disconnect immediately. Police never do official inquiry via WhatsApp Video.", isCorrect: true },
+            { id: "b", text: "Apologize and pay the 'bail money' they ask for.", isCorrect: false },
+            { id: "c", text: "Show them your Aadhaar card to prove innocence.", isCorrect: false }
+        ]
     },
     {
-        question: "Which of these is a secure password?",
-        options: ["password123", "Rahul@1990", "Cyb3r$ur@ksha#2025", "12345678"],
-        answer: 2,
-        explanation: "A strong password has Uppercase, Lowercase, Numbers, and Special Characters."
-    },
-    {
-        question: "You won a lottery you never entered! They need a small 'processing fee'.",
-        options: ["Pay the fee", "It's a classic 419 Scam", "Give bank details", "Forward to friends"],
-        answer: 1,
-        explanation: "Legitimate lotteries never ask for a fee to release winnings."
-    },
-    {
-        question: "What is the National Cyber Crime Helpline number?",
-        options: ["100", "1930", "155260", "911"],
-        answer: 1,
-        explanation: "1930 is the dedicated Cyber Financial Fraud Helpline in India."
+        id: 3,
+        question: "Which of these is the safest password?",
+        options: [
+            { id: "a", text: "Password@123", isCorrect: false },
+            { id: "b", text: "Rahul1990", isCorrect: false },
+            { id: "c", text: "T#runc@te!77$PlAn", isCorrect: true }
+        ]
     }
 ]
 
-export default function QuizPage() {
-    const [currentQ, setCurrentQ] = useState(0)
-    const [score, setScore] = useState(0)
-    const [showResult, setShowResult] = useState(false)
-    const [selectedOpt, setSelectedOpt] = useState<number | null>(null)
-    const [isAnswered, setIsAnswered] = useState(false)
+export default function CyberLicenseQuiz() {
+    const [current, setCurrent] = useState(0)
+    const [answers, setAnswers] = useState<Record<number, string>>({})
+    const [score, setScore] = useState<number | null>(null)
+    const [showCertificate, setShowCertificate] = useState(false)
 
-    const handleAnswer = (idx: number) => {
-        setSelectedOpt(idx)
-        setIsAnswered(true)
-        if (idx === QUESTIONS[currentQ].answer) {
-            setScore(score + 1)
-        }
+    const handleAnswer = (val: string) => {
+        setAnswers({ ...answers, [QUESTIONS[current].id]: val })
     }
 
-    const nextQuestion = () => {
-        if (currentQ < QUESTIONS.length - 1) {
-            setCurrentQ(currentQ + 1)
-            setSelectedOpt(null)
-            setIsAnswered(false)
-        } else {
-            setShowResult(true)
-        }
+    const next = () => {
+        if (current < QUESTIONS.length - 1) setCurrent(current + 1)
+        else calculateScore()
     }
 
-    const restart = () => {
-        setCurrentQ(0)
-        setScore(0)
-        setShowResult(false)
-        setSelectedOpt(null)
-        setIsAnswered(false)
+    const calculateScore = () => {
+        let correct = 0
+        const questionsMap = QUESTIONS.reduce((acc, q) => ({ ...acc, [q.id]: q }), {} as any)
+
+        QUESTIONS.forEach(q => {
+            if (questionsMap[q.id].options.find((o: { id: string, isCorrect: boolean }) => o.id === answers[q.id])?.isCorrect) {
+                correct++
+            }
+        })
+        setScore(correct)
+        if (correct === QUESTIONS.length) setShowCertificate(true)
     }
 
-    if (showResult) {
-        const passed = score >= 4
-        return (
-            <div className="container mx-auto px-4 py-12 max-w-md text-center animate-in zoom-in duration-500">
-                <Card className={`border-t-8 ${passed ? 'border-green-500' : 'border-orange-500'} shadow-2xl`}>
-                    <CardHeader>
-                        <div className="mx-auto w-24 h-24 bg-slate-100 rounded-full flex items-center justify-center mb-4">
-                            {passed ? <Trophy className="h-12 w-12 text-yellow-500" /> : <Brain className="h-12 w-12 text-orange-500" />}
-                        </div>
-                        <CardTitle className="text-2xl">{passed ? "Cyber Safe Certified!" : "Keep Learning!"}</CardTitle>
-                    </CardHeader>
-                    <CardContent className="space-y-4">
-                        <p className="text-4xl font-bold">{score} / {QUESTIONS.length}</p>
-                        <p className="text-muted-foreground">
-                            {passed ? "Excellent! You are ready to defend yourself against cyber threats." : "You need a score of 4/5 to get certified. Try again!"}
-                        </p>
+    const downloadCertificate = () => {
+        const doc = new jsPDF({
+            orientation: "landscape"
+        })
 
-                        {passed && (
-                            <div className="p-4 bg-yellow-50 border border-yellow-200 rounded-lg mt-4">
-                                <BadgeCheck className="h-8 w-8 text-blue-600 mx-auto mb-2" />
-                                <p className="font-serif italic text-lg text-slate-800">Certificate of Cyber Awareness</p>
-                                <p className="text-xs uppercase tracking-widest text-slate-500 mt-1">CyberSuraksha Verified</p>
-                            </div>
-                        )}
-                    </CardContent>
-                    <CardFooter>
-                        <Button onClick={restart} className="w-full" variant="outline">
-                            <RefreshCw className="mr-2 h-4 w-4" /> Retake Quiz
-                        </Button>
-                    </CardFooter>
-                </Card>
-            </div>
-        )
+        // Simple Certificate Design
+        doc.setFillColor(240, 240, 240)
+        doc.rect(0, 0, 297, 210, "F")
+
+        doc.setLineWidth(5)
+        doc.setDrawColor(37, 99, 235) // Blue border
+        doc.rect(10, 10, 277, 190)
+
+        doc.setFontSize(40)
+        doc.setTextColor(37, 99, 235)
+        doc.text("CERTIFICATE OF ACHIEVEMENT", 148, 50, { align: "center" })
+
+        doc.setFontSize(20)
+        doc.setTextColor(50, 50, 50)
+        doc.text("This certifies that", 148, 80, { align: "center" })
+
+        doc.setFontSize(30)
+        doc.setFont("helvetica", "bold")
+        doc.text("Responsible Citizen", 148, 100, { align: "center" }) // Ideally User Name
+
+        doc.setFontSize(20)
+        doc.setFont("helvetica", "normal")
+        doc.text("Has successfully completed the", 148, 120, { align: "center" })
+        doc.text("CyberSuraksha Digital Literacy Module", 148, 135, { align: "center" })
+
+        doc.setFontSize(15)
+        doc.text(`Issued: ${new Date().toLocaleDateString()}`, 148, 160, { align: "center" })
+        doc.text("Authorized by CyberSuraksha Initiative", 148, 170, { align: "center" })
+
+        doc.save("CyberSuraksha_Certificate.pdf")
     }
+
+    // Helper to access options easier
+    const questionsMap = QUESTIONS.reduce((acc, q) => ({ ...acc, [q.id]: q }), {} as any)
 
     return (
-        <div className="container mx-auto px-4 py-8 max-w-2xl">
-            <div className="flex justify-between items-center mb-6">
-                <h1 className="text-2xl font-bold flex items-center gap-2">
-                    <Brain className="text-primary" /> Cyber IQ Test
-                </h1>
-                <span className="text-sm font-semibold bg-muted px-3 py-1 rounded-full">
-                    Question {currentQ + 1}/{QUESTIONS.length}
-                </span>
-            </div>
-
-            <Progress value={((currentQ) / QUESTIONS.length) * 100} className="h-2 mb-8" />
-
-            <Card className="min-h-[400px] flex flex-col justify-between shadow-lg">
-                <CardContent className="pt-6">
-                    <h2 className="text-xl font-semibold mb-6">{QUESTIONS[currentQ].question}</h2>
-
-                    <div className="space-y-3">
-                        {QUESTIONS[currentQ].options.map((opt, idx) => {
-                            let btnClass = "w-full justify-start text-left h-auto py-3 px-4 "
-                            if (isAnswered) {
-                                if (idx === QUESTIONS[currentQ].answer) btnClass += "bg-green-100 border-green-500 text-green-900 "
-                                else if (idx === selectedOpt) btnClass += "bg-red-100 border-red-500 text-red-900 "
-                                else btnClass += "opacity-50 "
-                            } else {
-                                btnClass += "hover:bg-primary/5 "
-                            }
-
-                            return (
-                                <Button
-                                    key={idx}
-                                    variant="outline"
-                                    className={btnClass}
-                                    onClick={() => !isAnswered && handleAnswer(idx)}
-                                >
-                                    <span className="mr-3 font-mono font-bold text-muted-foreground">{String.fromCharCode(65 + idx)}.</span>
-                                    {opt}
-                                </Button>
-                            )
-                        })}
-                    </div>
-
-                    {isAnswered && (
-                        <div className="mt-6 p-4 bg-blue-50 dark:bg-blue-900/20 text-blue-800 dark:text-blue-300 rounded-lg animate-in fade-in">
-                            <p className="font-bold text-sm mb-1">💡 Explanation:</p>
-                            <p className="text-sm">{QUESTIONS[currentQ].explanation}</p>
-                        </div>
-                    )}
-                </CardContent>
-                <CardFooter className="justify-end border-t pt-4">
-                    <Button onClick={nextQuestion} disabled={!isAnswered}>
-                        {currentQ === QUESTIONS.length - 1 ? "Finish" : "Next Question"} <ChevronRight className="ml-2 h-4 w-4" />
-                    </Button>
-                </CardFooter>
-            </Card>
+        <div className="min-h-screen bg-slate-50 dark:bg-slate-950">
+            <Header />
+            <main className="container mx-auto px-4 py-10 max-w-2xl">
+                {!showCertificate ? (
+                    <Card className="glassy border-t-4 border-t-primary">
+                        <CardHeader>
+                            <CardTitle className="flex justify-between items-center">
+                                <span>Cyber License Exam</span>
+                                <span className="text-sm font-normal text-muted-foreground">Q {current + 1} / {QUESTIONS.length}</span>
+                            </CardTitle>
+                            <CardDescription>Score 100% to earn your Verified Citizen Badge.</CardDescription>
+                        </CardHeader>
+                        <CardContent className="space-y-6">
+                            <div className="text-lg font-medium">{QUESTIONS[current].question}</div>
+                            <RadioGroup value={answers[QUESTIONS[current].id]} onValueChange={handleAnswer}>
+                                {QUESTIONS[current].options.map(opt => (
+                                    <div key={opt.id} className="flex items-center space-x-2 border p-4 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
+                                        <RadioGroupItem value={opt.id} id={opt.id} />
+                                        <Label htmlFor={opt.id} className="flex-1 cursor-pointer">{opt.text}</Label>
+                                    </div>
+                                ))}
+                            </RadioGroup>
+                        </CardContent>
+                        <CardFooter className="flex justify-end">
+                            <Button onClick={next} disabled={!answers[QUESTIONS[current].id]}>
+                                {current === QUESTIONS.length - 1 ? "Finish Exam" : "Next Question"}
+                            </Button>
+                        </CardFooter>
+                    </Card>
+                ) : (
+                    <Card className="glassy border-t-4 border-t-green-500 bg-green-50/50 dark:bg-green-900/10">
+                        <CardHeader className="text-center">
+                            <div className="mx-auto bg-green-100 p-4 rounded-full w-20 h-20 flex items-center justify-center mb-4">
+                                <Award className="h-10 w-10 text-green-600" />
+                            </div>
+                            <CardTitle className="text-3xl text-green-700 dark:text-green-400">Congratulations!</CardTitle>
+                            <CardDescription>You are now a Certified Cyber Safe Citizen.</CardDescription>
+                        </CardHeader>
+                        <CardContent className="text-center space-y-4">
+                            <p className="text-lg">You scored {score}/{QUESTIONS.length}!</p>
+                            <div className="p-8 border-4 border-double border-orange-300 rounded-lg bg-white dark:bg-slate-900 shadow-xl max-w-sm mx-auto transform rotate-1 hover:rotate-0 transition-transform duration-500">
+                                <div className="text-xs text-orange-500 font-bold uppercase tracking-widest mb-2">Official Credential</div>
+                                <div className="font-serif text-2xl font-bold mb-1">Cyber License</div>
+                                <div className="text-sm text-muted-foreground mb-4">CyberSuraksha Authority</div>
+                                <Award className="h-16 w-16 text-orange-400 mx-auto opacity-50" />
+                            </div>
+                        </CardContent>
+                        <CardFooter className="flex justify-center gap-4">
+                            <Button onClick={() => window.location.reload()} variant="outline">
+                                <RefreshCcw className="mr-2 h-4 w-4" /> Retry
+                            </Button>
+                            <Button onClick={downloadCertificate} className="bg-green-600 hover:bg-green-700 text-white shadow-lg shadow-green-500/20">
+                                <Download className="mr-2 h-4 w-4" /> Download PDF
+                            </Button>
+                        </CardFooter>
+                    </Card>
+                )}
+            </main>
         </div>
     )
 }

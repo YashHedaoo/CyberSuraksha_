@@ -5,67 +5,112 @@
 }
 
 :root {
-  /* BASE THEME: CYBER DARK + BLUE AUTHORITY */
-  /* Backgrounds */
-  --background: 224 40% 7%;      /* #0B0F1A */
-  --foreground: 220 13% 91%;     /* #E5E7EB */
+  /* THEME: TRUST & CLARITY (Default Light) */
+  /* Clean, official, and high-contrast for readability */
 
-  --card: 220 35% 13%;           /* #161E2E */
-  --card-foreground: 220 13% 91%;
+  --background: 210 40% 98%;
+  /* Slate 50 - Soft White */
+  --foreground: 222 47% 11%;
+  /* Slate 900 - Deep Navy/Black */
 
-  --popover: 223 40% 6%;         /* #0A0E17 Sidebar Bg */
-  --popover-foreground: 220 13% 91%;
+  --card: 0 0% 100%;
+  /* White */
+  --card-foreground: 222 47% 11%;
 
-  /* Primary Accent: Trust Blue */
-  --primary: 221 83% 53%;        /* #2563EB */
-  --primary-foreground: 0 0% 100%;
+  --popover: 0 0% 100%;
+  --popover-foreground: 222 47% 11%;
 
-  /* Secondary: Dark Blue-Gray */
-  --secondary: 221 39% 11%;      /* #111827 */
-  --secondary-foreground: 220 13% 91%;
+  /* Primary: Trust Blue (Standard Web Accessible) */
+  --primary: 221 83% 53%;
+  /* #2563EB - Blue 600 */
+  --primary-foreground: 210 40% 98%;
 
-  /* Muted */
-  --muted: 221 39% 11%;
-  --muted-foreground: 218 11% 65%; /* #9CA3AF */
+  /* Secondary: Subtle Slate */
+  --secondary: 210 40% 96.1%;
+  /* Slate 100 */
+  --secondary-foreground: 222 47% 11%;
 
-  /* Accent: Cyan / AI Feel */
-  --accent: 189 84% 53%;         /* #22D3EE */
-  --accent-foreground: 224 40% 7%;
+  /* Muted: For disabled or subtle text */
+  --muted: 210 40% 96.1%;
+  --muted-foreground: 215.4 16.3% 46.9%;
+  /* Slate 500 */
 
-  /* Destructive */
-  --destructive: 0 84% 60%;      /* #EF4444 */
-  --destructive-foreground: 0 0% 100%;
+  /* Accent: Sky Blue (For highlights/active states) */
+  --accent: 199 89% 48%;
+  /* Sky 500 */
+  --accent-foreground: 210 40% 98%;
+
+  /* Destructive: Clear Red */
+  --destructive: 0 84.2% 60.2%;
+  /* Red 500 */
+  --destructive-foreground: 210 40% 98%;
 
   /* Borders & Inputs */
-  --border: 215 28% 17%;         /* #1F2937 (calculated approx) */
-  --input: 215 28% 17%;
-  --ring: 189 84% 53%;           /* Cyan Ring */
+  --border: 214.3 31.8% 91.4%;
+  /* Slate 200 */
+  --input: 214.3 31.8% 91.4%;
+  --ring: 221 83% 53%;
+  /* Primary Blue Ring */
 
-  --radius: 0.75rem;             /* 12px Rounded for Citizen Friendly */
+  --radius: 0.75rem;
+  /* 12px Rounded - Friendly */
 }
 
-/* Police Theme Overrides */
+/* Police Theme Overrides - Stricter, Darker Blue */
 .police-theme {
-  /* Authority Blue */
-  --primary: 226 71% 40%;        /* #1E40AF */
-  --primary-foreground: 0 0% 100%;
-  
-  /* Info Blue */
-  --accent: 199 89% 48%;         /* #0EA5E9 */
-  --accent-foreground: 0 0% 100%;
+  --primary: 224 64% 33%;
+  /* #1e3a8a - Blue 900 (Deep Navy) */
+  --primary-foreground: 210 40% 98%;
 
-  /* Deep Red Critical */
-  --destructive: 0 72% 51%;      /* #DC2626 */
-  
-  /* Squarer UI */
-  --radius: 0.25rem;             /* 4px */
-  
-  /* Slightly stricter borders */
-  --border: 215 28% 25%;
+  --accent: 201 96% 32%;
+  /* #0284c7 - Sky 700 */
+  --accent-foreground: 210 40% 98%;
+
+  /* Sharper UI for Authority */
+  --radius: 0.25rem;
+  /* 4px */
 }
 
 .dark {
-  /* Inherit :root because :root IS the dark mode now */
+  /* DARK MODE: MODERN & SLEEQ (Not pitch black, but rich slate) */
+
+  --background: 222 47% 11%;
+  /* Slate 900 */
+  --foreground: 210 40% 98%;
+  /* Slate 50 */
+
+  --card: 217 33% 17%;
+  /* Slate 800 */
+  --card-foreground: 210 40% 98%;
+
+  --popover: 222 47% 11%;
+  --popover-foreground: 210 40% 98%;
+
+  /* Dark Mode Primary is lighter for contrast */
+  --primary: 217 91% 60%;
+  /* Blue 500 */
+  --primary-foreground: 222 47% 11%;
+
+  --secondary: 217 33% 17%;
+  /* Slate 800 */
+  --secondary-foreground: 210 40% 98%;
+
+  --muted: 217 33% 17%;
+  --muted-foreground: 215 20.2% 65.1%;
+  /* Slate 400 */
+
+  --accent: 199 89% 48%;
+  /* Sky 500 (Keeps punch) */
+  --accent-foreground: 0 0% 100%;
+
+  --destructive: 0 62.8% 30.6%;
+  /* Red 900 (Muted Red Background) */
+  --destructive-foreground: 210 40% 98%;
+
+  --border: 217 33% 17%;
+  /* Slate 800 */
+  --input: 217 33% 17%;
+  --ring: 224 76% 48%;
 }
 
 body {
@@ -77,14 +122,23 @@ body {
 
 /* Glassmorphism Utilities */
 .glassy {
-  @apply bg-[#161E2E]/80 backdrop-blur-md border border-white/10 shadow-lg;
+  /* Updated for compatibility with both Light/Dark */
+  @apply bg-white/80 dark:bg-[#161E2E]/80 backdrop-blur-md border border-slate-200 dark:border-white/10 shadow-lg;
 }
 
 /* Animations */
 @keyframes gradient-x {
-  0% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
+  0% {
+    background-position: 0% 50%;
+  }
+
+  50% {
+    background-position: 100% 50%;
+  }
+
+  100% {
+    background-position: 0% 50%;
+  }
 }
 
 .animate-gradient-x {
@@ -92,23 +146,31 @@ body {
   animation: gradient-x 8s ease infinite;
 }
 
-/* Animated Grid Pattern */
+/* Animated Grid Pattern (Restyled for Light/Dark) */
 .bg-grid-white {
   background-size: 40px 40px;
+  background-image: linear-gradient(to right, rgba(0, 0, 0, 0.05) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(0, 0, 0, 0.05) 1px, transparent 1px);
+}
+
+.dark .bg-grid-white {
   background-image: linear-gradient(to right, rgba(255, 255, 255, 0.05) 1px, transparent 1px),
-                    linear-gradient(to bottom, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
 }
 
 /* Scrollbar Polish */
 ::-webkit-scrollbar {
   width: 8px;
 }
+
 ::-webkit-scrollbar-track {
   background: transparent;
 }
+
 ::-webkit-scrollbar-thumb {
-  @apply bg-slate-700 rounded-full;
+  @apply bg-slate-300 dark:bg-slate-700 rounded-full;
 }
+
 ::-webkit-scrollbar-thumb:hover {
-  @apply bg-slate-600;
+  @apply bg-slate-400 dark:bg-slate-600;
 }
