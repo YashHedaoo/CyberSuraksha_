@@ -10,6 +10,7 @@ import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
 import { LayoutDashboard, FileText, ScrollText, Shield, Menu, LogOut, User as UserIcon, Settings, Bot } from "lucide-react"
 import { LanguageToggle } from "@/components/language-toggle"
 import { ThemeToggle } from "@/components/theme-toggle"
+import { ProtectedRoute } from "@/components/auth/protected-route"
 
 export default function DashboardLayout({
     children,
@@ -25,7 +26,7 @@ export default function DashboardLayout({
         { name: t.nav.overview, href: "/dashboard", icon: LayoutDashboard },
         { name: t.nav.fileComplaint, href: "/dashboard/file-complaint", icon: FileText },
         { name: t.nav.myComplaints, href: "/dashboard/my-complaints", icon: ScrollText },
-        { name: t.nav.safety, href: "/safety", icon: Shield },
+        { name: t.nav.safety, href: "/safety-resources", icon: Shield },
         { name: t.nav.ai || "AI Assistant", href: "/ai-assistant", icon: Bot },
         { name: t.nav.settings, href: "/settings", icon: Settings },
     ]
@@ -80,39 +81,41 @@ export default function DashboardLayout({
     )
 
     return (
-        <div className="min-h-screen bg-background text-foreground">
-            {/* Mobile Header */}
-            <div className="lg:hidden flex items-center justify-between p-4 border-b border-border bg-popover text-popover-foreground sticky top-0 z-20">
-                <div className="flex items-center gap-2 font-bold">
-                    <Shield className="h-6 w-6 text-primary" />
-                    <span>CyberSuraksha</span>
-                </div>
-                <Sheet open={open} onOpenChange={setOpen}>
-                    <SheetTrigger asChild>
-                        <Button variant="ghost" size="icon">
-                            <Menu className="h-6 w-6" />
-                        </Button>
-                    </SheetTrigger>
-                    <SheetContent side="left" className="p-0 sm:max-w-xs">
-                        <SidebarContent />
-                    </SheetContent>
-                </Sheet>
-            </div>
-
-            <div className="flex h-screen overflow-hidden">
-                {/* Desktop Sidebar */}
-                <aside className="hidden lg:flex w-64 flex-col border-r border-border bg-popover text-popover-foreground sticky top-0 h-screen">
-                    <SidebarContent />
-                </aside>
-
-                {/* Main Content */}
-                <main className="flex-1 overflow-y-auto bg-background">
-                    <div className="container max-w-6xl mx-auto p-4 lg:p-8">
-                        {children}
+        <ProtectedRoute role="user">
+            <div className="min-h-screen bg-background text-foreground">
+                {/* Mobile Header */}
+                <div className="lg:hidden flex items-center justify-between p-4 border-b border-border bg-popover text-popover-foreground sticky top-0 z-20">
+                    <div className="flex items-center gap-2 font-bold">
+                        <Shield className="h-6 w-6 text-primary" />
+                        <span>CyberSuraksha</span>
                     </div>
-                </main>
+                    <Sheet open={open} onOpenChange={setOpen}>
+                        <SheetTrigger asChild>
+                            <Button variant="ghost" size="icon">
+                                <Menu className="h-6 w-6" />
+                            </Button>
+                        </SheetTrigger>
+                        <SheetContent side="left" className="p-0 sm:max-w-xs">
+                            <SidebarContent />
+                        </SheetContent>
+                    </Sheet>
+                </div>
+
+                <div className="flex h-screen overflow-hidden">
+                    {/* Desktop Sidebar */}
+                    <aside className="hidden lg:flex w-64 flex-col border-r border-border bg-popover text-popover-foreground sticky top-0 h-screen">
+                        <SidebarContent />
+                    </aside>
+
+                    {/* Main Content */}
+                    <main className="flex-1 overflow-y-auto bg-background">
+                        <div className="container max-w-6xl mx-auto p-4 lg:p-8">
+                            {children}
+                        </div>
+                    </main>
+                </div>
             </div>
-        </div>
+        </ProtectedRoute>
     )
 }
 

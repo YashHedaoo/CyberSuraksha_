@@ -4,75 +4,71 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { ShieldAlert, FileText, Smartphone, Users, Search, Phone, Video, Lock, GraduationCap, HardDrive } from "lucide-react"
 import Link from "next/link"
+import { useLanguage } from "@/context/language-context"
 
 export default function ToolsIndexPage() {
+    const { t } = useLanguage()
+
     const tools = [
         {
-            title: "Safety Vault",
-            desc: "Offline evidence storage with Duress Mode.",
-            href: "/tools/safety-vault",
-            icon: HardDrive,
-            color: "text-slate-600 bg-slate-200 dark:bg-slate-800 dark:text-slate-100"
-        },
-        {
-            title: "Phishing Dojo",
-            desc: "Gamified training to spot scams.",
+            title: t.toolsIndex.phishingTitle,
+            desc: t.toolsIndex.phishingDesc,
             href: "/tools/phishing-dojo",
             icon: GraduationCap,
             color: "text-yellow-600 bg-yellow-100"
         },
         {
-            title: "WhatsApp Bot Check",
-            desc: "Forward suspicious messages to check links.",
+            title: t.toolsIndex.whatsappTitle,
+            desc: t.toolsIndex.whatsappDesc,
             href: "/tools/whatsapp-bot",
             icon: ShieldAlert,
             color: "text-green-600 bg-green-100"
         },
         {
-            title: "AI FIR Drafter",
-            desc: "Generate a legally valid police complaint.",
+            title: t.toolsIndex.firTitle,
+            desc: t.toolsIndex.firDesc,
             href: "/tools/fir-drafter",
             icon: FileText,
             color: "text-blue-600 bg-blue-100"
         },
         {
-            title: "Digital Arrest Simulator",
-            desc: "Experience a fake police call to learn safety.",
+            title: t.toolsIndex.digitalArrestTitle,
+            desc: t.toolsIndex.digitalArrestDesc,
             href: "/tools/digital-arrest",
             icon: Video,
             color: "text-red-600 bg-red-100"
         },
         {
-            title: "Fake Payment Detector",
-            desc: "For Merchants: Spot spoofed payment screens.",
+            title: t.toolsIndex.fakePaymentTitle,
+            desc: t.toolsIndex.fakePaymentDesc,
             href: "/tools/fake-payment",
             icon: Smartphone,
             color: "text-purple-600 bg-purple-100"
         },
         {
-            title: "Mule Account Search",
-            desc: "Search blacklisted fraud numbers.",
+            title: t.toolsIndex.muleTitle,
+            desc: t.toolsIndex.muleDesc,
             href: "/tools/mule-search",
             icon: Search,
             color: "text-orange-600 bg-orange-100"
         },
         {
-            title: "APK Safety Scanner",
-            desc: "Find dangerous permissions in your apps.",
+            title: t.toolsIndex.apkTitle,
+            desc: t.toolsIndex.apkDesc,
             href: "/tools/apk-scanner",
             icon: Lock,
             color: "text-indigo-600 bg-indigo-100"
         },
         {
-            title: "SMS Case Tracker",
-            desc: "Offline status check via 'Missed Call'.",
+            title: t.toolsIndex.smsTitle,
+            desc: t.toolsIndex.smsDesc,
             href: "/tools/sms-tracker",
             icon: Phone,
             color: "text-slate-600 bg-slate-100"
         },
         {
-            title: "Community Shield",
-            desc: "Family safety, insurance & local alerts.",
+            title: t.toolsIndex.communityTitle,
+            desc: t.toolsIndex.communityDesc,
             href: "/community",
             icon: Users,
             color: "text-pink-600 bg-pink-100"
@@ -83,9 +79,9 @@ export default function ToolsIndexPage() {
         <div className="min-h-screen bg-slate-50 dark:bg-slate-950 p-6">
             <div className="container mx-auto py-8">
                 <div className="text-center mb-12">
-                    <h1 className="text-4xl font-bold mb-4">Cyber Defence Toolkit</h1>
+                    <h1 className="text-4xl font-bold mb-4">{t.toolsIndex.title}</h1>
                     <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-                        Powerful, government-grade tools to protect you, your family, and your business from digital fraud.
+                        {t.toolsIndex.subtitle}
                     </p>
                 </div>
 

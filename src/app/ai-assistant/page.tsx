@@ -175,7 +175,7 @@ export default function AIAssistantPage() {
                 <Shield className="h-3 w-3" /> Secure & Private
               </div>
               <div className="scale-100">
-                <VoiceInput variant="compact" onTranscript={(text) => setInput(prev => prev + " " + text)} />
+                <VoiceInput onResult={(text: string) => setInput(prev => prev + " " + text)} />
               </div>
             </div>
           </div>

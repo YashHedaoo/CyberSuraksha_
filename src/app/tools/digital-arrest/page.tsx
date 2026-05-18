@@ -127,7 +127,7 @@ export default function DigitalArrestSimulator() {
                                 <div className="bg-black/80 text-white p-4 rounded-xl text-center border border-red-500 shadow-2xl">
                                     <p className="font-bold text-lg text-red-400 mb-2">⚠ Is this real?</p>
                                     <Button variant="secondary" className="w-full" onClick={() => setState('education')}>
-                                        STOP SIMULATION - SHOW TRUTH
+                                        END CALL - VERIFY SAFETY
                                     </Button>
                                 </div>
                             </div>
@@ -141,7 +141,7 @@ export default function DigitalArrestSimulator() {
                         <div className="text-center mb-8">
                             <ShieldAlert className="h-16 w-16 text-green-600 mx-auto mb-4" />
                             <h2 className="text-3xl font-bold text-green-700 dark:text-green-500">You are Safe!</h2>
-                            <p className="text-muted-foreground">That was a simulation of a "Digital Arrest" scam.</p>
+                            <p className="text-muted-foreground">This scenario demonstrates a typical "Digital Arrest" scam.</p>
                         </div>
 
                         <div className="space-y-6">

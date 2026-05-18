@@ -10,6 +10,15 @@ export interface User {
     avatarUrl?: string;
 }
 
+
+export interface InvestigationNote {
+    id: string;
+    author: string;
+    content: string;
+    timestamp: string;
+    type: 'general' | 'evidence' | 'suspect' | 'action';
+}
+
 export interface Complaint {
     id: string;
     userId: string;
@@ -22,8 +31,10 @@ export interface Complaint {
     incidentDate: string;
     createdAt: string;
     evidenceFiles?: string[];
-    policeNotes?: string;
+    policeNotes?: string; // Legacy field, kept for backward compat
     aiPriorityScore?: number; // 0-100
     assignedOfficer?: string;
     slaDeadline?: string;
+    investigationNotes?: InvestigationNote[];
+    timeline?: { status: string; timestamp: string; note?: string }[];
 }

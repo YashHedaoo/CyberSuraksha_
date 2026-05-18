@@ -6,7 +6,7 @@ import { usePathname } from "next/navigation"
 import { useAuth } from "@/context/auth-context"
 import { Button } from "@/components/ui/button"
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
-import { LayoutDashboard, Users, Settings, Shield, Menu, LogOut, Siren } from "lucide-react"
+import { LayoutDashboard, Users, Settings, Shield, Menu, LogOut, Siren, Database } from "lucide-react"
 
 export default function PoliceLayout({
     children,
@@ -21,6 +21,7 @@ export default function PoliceLayout({
 
     const navigation = [
         { name: "Case Management", href: "/police/dashboard", icon: LayoutDashboard },
+        { name: "Intel Database", href: "/police/dashboard/intel", icon: Database }, // New
         { name: "Officers", href: "/police/dashboard/officers", icon: Users },
         { name: "Station Settings", href: "/police/dashboard/settings", icon: Settings },
     ]

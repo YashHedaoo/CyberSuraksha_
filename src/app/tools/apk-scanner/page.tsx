@@ -4,36 +4,59 @@ import { useState } from "react"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-import { AlertTriangle, ShieldCheck, Smartphone, Info, Lock } from "lucide-react"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { AlertTriangle, ShieldCheck, Smartphone, Info, Lock, Zap, Skull } from "lucide-react"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Label } from "@/components/ui/label"
-
-const PERMISSIONS = [
-    { id: "camera", label: "Camera", risk: 5, desc: "Can take photos/videos without you knowing" },
-    { id: "mic", label: "Microphone", risk: 5, desc: "Can record audio in background" },
-    { id: "location", label: "Precise Location", risk: 4, desc: "Tracks your exact movements" },
-    { id: "contacts", label: "Read Contacts", risk: 4, desc: "Uploads your friend list to servers" },
-    { id: "sms", label: "Read SMS", risk: 5, desc: "Can read OTPs and banking messages" },
-    { id: "storage", label: "Storage (Photos/Files)", risk: 3, desc: "Access to private photos" },
-    { id: "phone", label: "Phone State/Call Log", risk: 3, desc: "Can see who you call" },
-    { id: "overlay", label: "Display Over Apps", risk: 5, desc: "Can draw fake login screens over banks" },
-    { id: "accessibility", label: "Accessibility Services", risk: 10, desc: "Full control of device (DANGEROUS)" },
-]
+import { cn } from "@/components/lib/utils"
+import { useLanguage } from "@/context/language-context"
 
 export default function AppRiskScanner() {
+    const { t } = useLanguage()
     const [selectedPermissions, setSelectedPermissions] = useState<string[]>([])
     const [analyzing, setAnalyzing] = useState(false)
     const [result, setResult] = useState<{ score: number, level: string, advice: string[] } | null>(null)
+    const [panicMode, setPanicMode] = useState(false)
+
+    // Move constants inside to access translations
+    const PERMISSIONS = [
+        { id: "camera", label: t.apkScanner.perms.camera, risk: 5 },
+        { id: "mic", label: t.apkScanner.perms.mic, risk: 5 },
+        { id: "location", label: t.apkScanner.perms.location, risk: 4 },
+        { id: "contacts", label: t.apkScanner.perms.contacts, risk: 5 },
+        { id: "sms", label: t.apkScanner.perms.sms, risk: 10 },
+        { id: "storage", label: t.apkScanner.perms.storage, risk: 3 },
+        { id: "phone", label: t.apkScanner.perms.phone, risk: 3 },
+        { id: "overlay", label: t.apkScanner.perms.overlay, risk: 10 },
+        { id: "accessibility", label: t.apkScanner.perms.accessibility, risk: 15 },
+    ]
+
+    const PRESETS = [
+        { name: t.apkScanner.presets.loan, perms: ["contacts", "storage", "camera", "location"], icon: "💸" },
+        { name: t.apkScanner.presets.betting, perms: ["overlay", "sms", "phone"], icon: "🎲" },
+        { name: t.apkScanner.presets.dating, perms: ["camera", "mic", "location", "storage"], icon: "💘" },
+        { name: t.apkScanner.presets.fakeKyc, perms: ["sms", "overlay", "accessibility", "contacts"], icon: "🏦" },
+        { name: t.apkScanner.presets.flashlight, perms: [], icon: "🔦" },
+    ]
 
     const togglePermission = (id: string) => {
+        setResult(null)
+        setPanicMode(false)
         setSelectedPermissions(prev =>
             prev.includes(id) ? prev.filter(p => p !== id) : [...prev, id]
         )
     }
 
+    const applyPreset = (perms: string[]) => {
+        setSelectedPermissions(perms)
+        setResult(null)
+        setPanicMode(false)
+    }
+
     const analyzeRisk = () => {
         setAnalyzing(true)
+        setPanicMode(false)
+
+        // Simulate deeper analysis
         setTimeout(() => {
             let totalRisk = 0
             const advice: string[] = []
@@ -44,123 +67,181 @@ export default function AppRiskScanner() {
             })
 
             // Logic for combinations
+            let isDeadly = false
             if (selectedPermissions.includes("sms") && selectedPermissions.includes("overlay")) {
-                totalRisk += 10
-                advice.push("CRITICAL: SMS + Overlay permission is the #1 indicator of banking trojans.")
+                totalRisk += 20
+                advice.push(t.apkScanner.advice.smsOverlay)
+                isDeadly = true
             }
             if (selectedPermissions.includes("accessibility")) {
-                advice.push("HIGH ALERT: Accessibility permissions should ONLY be given to trusted apps for disabled users. Never give this to a loan app or game.")
+                totalRisk += 30
+                advice.push(t.apkScanner.advice.accessibility)
+                isDeadly = true
             }
             if (selectedPermissions.includes("contacts") && selectedPermissions.includes("storage")) {
-                advice.push("Predatory Loan Apps often demand Contacts + Storage to blackmail users.")
+                advice.push(t.apkScanner.advice.extortion)
             }
 
-            let level = "Low Risk"
-            if (totalRisk > 25) level = "CRITICAL MALWARE RISK"
-            else if (totalRisk > 15) level = "High Risk"
-            else if (totalRisk > 5) level = "Moderate Risk"
+            let level = t.apkScanner.safe // Default
+            if (totalRisk > 35) {
+                level = t.apkScanner.critical
+                if (isDeadly) setPanicMode(true)
+            }
+            else if (totalRisk > 15) level = t.apkScanner.high
+            else if (totalRisk > 5) level = t.apkScanner.moderate
 
             setResult({ score: totalRisk, level, advice })
             setAnalyzing(false)
-        }, 1500)
+        }, 1200)
     }
 
     return (
-        <div className="container mx-auto p-4 max-w-4xl space-y-6">
-            <div className="space-y-2">
-                <h1 className="text-3xl font-bold flex items-center gap-2">
-                    <Smartphone className="h-8 w-8 text-blue-600" /> App Risk Calculator
-                </h1>
-                <p className="text-muted-foreground">
-                    Web Browsers cannot directly scan installed apps for privacy reasons.
-                    <br />Use this tool to manually audit suspicious apps asking for permissions.
-                </p>
-            </div>
+        <div className={cn("min-h-screen transition-colors duration-500 p-6", panicMode ? "bg-red-950/30" : "")}>
+            <div className="container mx-auto max-w-5xl space-y-8">
+                <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                    <div className="space-y-2">
+                        <h1 className="text-4xl font-black flex items-center gap-3">
+                            {panicMode ? <Skull className="h-10 w-10 text-red-600 animate-pulse" /> : <Smartphone className="h-10 w-10 text-blue-600" />}
+                            {t.apkScanner.title}
+                        </h1>
+                        <p className="text-muted-foreground text-lg">
+                            {t.apkScanner.subtitle}
+                        </p>
+                    </div>
+                </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                {/* INPUT SECTION */}
-                <Card>
-                    <CardHeader>
-                        <CardTitle>Select Requested Permissions</CardTitle>
-                        <CardDescription>Check the boxes that the app is asking for</CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                            {PERMISSIONS.map((perm) => (
-                                <div key={perm.id} className="flex items-start space-x-2 border p-3 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-900 transition-colors">
-                                    <Checkbox
-                                        id={perm.id}
-                                        checked={selectedPermissions.includes(perm.id)}
-                                        onCheckedChange={() => togglePermission(perm.id)}
-                                    />
-                                    <div className="grid gap-1.5 leading-none">
-                                        <Label htmlFor={perm.id} className="font-semibold cursor-pointer">
-                                            {perm.label}
-                                        </Label>
-                                        <p className="text-xs text-muted-foreground">
-                                            {perm.desc}
-                                        </p>
-                                    </div>
-                                </div>
-                            ))}
+                {panicMode && (
+                    <div className="bg-red-600 text-white p-4 rounded-xl font-bold text-center animate-bounce shadow-[0_0_30px_rgba(220,38,38,0.6)]">
+                        {t.apkScanner.dangerAlert}
+                    </div>
+                )}
+
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+                    {/* LEFT COL: CONTROLS */}
+                    <div className="lg:col-span-7 space-y-6">
+
+                        {/* PRESETS */}
+                        <div className="bg-white dark:bg-slate-900 p-4 rounded-xl border shadow-sm space-y-3">
+                            <h3 className="text-sm font-bold text-muted-foreground uppercase tracking-wider flex items-center gap-2">
+                                <Zap className="h-4 w-4" /> {t.apkScanner.quickScenarios}
+                            </h3>
+                            <div className="flex flex-wrap gap-2">
+                                {PRESETS.map(preset => (
+                                    <Button
+                                        key={preset.name}
+                                        variant="outline"
+                                        size="sm"
+                                        onClick={() => applyPreset(preset.perms)}
+                                        className="hover:bg-blue-50 hover:text-blue-700 dark:hover:bg-blue-900/30"
+                                    >
+                                        <span className="mr-2">{preset.icon}</span> {preset.name}
+                                    </Button>
+                                ))}
+                            </div>
                         </div>
-                        <Button
-                            className="w-full mt-6 h-12 text-lg"
-                            onClick={analyzeRisk}
-                            disabled={analyzing || selectedPermissions.length === 0}
-                        >
-                            {analyzing ? "Analyzing Patterns..." : "Calculate Risk Score"}
-                        </Button>
-                    </CardContent>
-                </Card>
 
-                {/* RESULT SECTION */}
-                <div className="space-y-6">
-                    {result ? (
-                        <Card className={`border-l-8 ${result.level.includes("CRITICAL") ? "border-l-red-600 bg-red-50 dark:bg-red-900/20" : result.level.includes("High") ? "border-l-orange-500" : "border-l-green-500"}`}>
+                        {/* INPUTS */}
+                        <Card className="border-2">
                             <CardHeader>
-                                <CardTitle className="flex justify-between items-center">
-                                    Risk Level
-                                    <Badge variant={result.level.includes("Low") ? "outline" : "destructive"} className="text-lg px-3 py-1">
-                                        {result.level}
-                                    </Badge>
-                                </CardTitle>
+                                <CardTitle>{t.apkScanner.permissionsTitle}</CardTitle>
+                                <CardDescription>{t.apkScanner.permissionsDesc}</CardDescription>
                             </CardHeader>
-                            <CardContent className="space-y-4">
-                                <div className="text-4xl font-black">{Math.min(result.score * 2, 100)}/100 <span className="text-sm font-normal text-muted-foreground">Threat Score</span></div>
-
-                                {result.advice.length > 0 && (
-                                    <div className="bg-white dark:bg-black/20 p-4 rounded-lg border">
-                                        <h4 className="font-bold flex items-center gap-2 mb-2">
-                                            <ShieldCheck className="h-4 w-4" /> AI Analysis:
-                                        </h4>
-                                        <ul className="list-disc pl-5 space-y-2 text-sm">
-                                            {result.advice.map((adv, i) => (
-                                                <li key={i}>{adv}</li>
-                                            ))}
-                                        </ul>
-                                    </div>
-                                )}
-
-                                {result.level.includes("Safe") || result.score < 10 ? (
-                                    <p className="text-sm text-green-700 dark:text-green-400">
-                                        This app appears to be asking for minimal permissions. However, always verify the developer.
-                                    </p>
-                                ) : (
-                                    <div className="space-y-2">
-                                        <p className="font-bold text-red-600">Recommendation:</p>
-                                        <p className="text-sm">Do not install this app / Uninstall immediately if installed. It is requesting a dangerous combination of access rights typical of spyware.</p>
-                                    </div>
-                                )}
+                            <CardContent>
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                    {PERMISSIONS.map((perm) => (
+                                        <div
+                                            key={perm.id}
+                                            className={cn(
+                                                "flex items-start space-x-3 border p-3 rounded-lg transition-colors cursor-pointer",
+                                                selectedPermissions.includes(perm.id) ? "bg-blue-50 border-blue-200 dark:bg-blue-900/20" : "hover:bg-slate-50 dark:hover:bg-slate-800",
+                                                panicMode && selectedPermissions.includes(perm.id) && perm.risk >= 10 ? "bg-red-100 border-red-500 animate-pulse" : ""
+                                            )}
+                                            onClick={() => togglePermission(perm.id)}
+                                        >
+                                            <Checkbox
+                                                id={perm.id}
+                                                checked={selectedPermissions.includes(perm.id)}
+                                                onCheckedChange={() => { }}
+                                                className="mt-1"
+                                            />
+                                            <div className="grid gap-1">
+                                                <Label htmlFor={perm.id} className="font-bold cursor-pointer text-base">
+                                                    {perm.label}
+                                                </Label>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                                <Button
+                                    className={cn("w-full mt-8 h-14 text-xl font-bold shadow-lg transition-all", panicMode ? "bg-red-600 hover:bg-red-700" : "bg-blue-600 hover:bg-blue-700")}
+                                    onClick={analyzeRisk}
+                                    disabled={analyzing || selectedPermissions.length === 0}
+                                >
+                                    {analyzing ? t.apkScanner.scanning : t.apkScanner.analyzeBtn}
+                                </Button>
                             </CardContent>
                         </Card>
-                    ) : (
-                        <div className="h-full flex flex-col items-center justify-center p-8 text-center text-muted-foreground border-2 border-dashed rounded-xl">
-                            <Lock className="h-16 w-16 mb-4 opacity-20" />
-                            <h3 className="text-lg font-semibold">Waiting for input...</h3>
-                            <p className="max-w-xs mx-auto">Select permissions on the left to see how dangerous an app might be.</p>
+                    </div>
+
+                    {/* RIGHT COL: RESULTS */}
+                    <div className="lg:col-span-5 space-y-6">
+                        <div className={cn(
+                            "h-full border-4 border-dashed rounded-xl flex flex-col items-center justify-center p-8 transition-all duration-500",
+                            result ? "bg-white dark:bg-slate-900 border-solid border-transparent shadow-2xl" : "border-slate-300 dark:border-slate-800 opacity-60",
+                            panicMode ? "shadow-[0_0_50px_rgba(220,38,38,0.5)] scale-105" : ""
+                        )}>
+                            {result ? (
+                                <div className="w-full space-y-6 text-center animate-in zoom-in-95 duration-300">
+                                    <div className="relative inline-block">
+                                        <div className={cn("text-6xl font-black font-mono", panicMode ? "text-red-600" : "text-slate-900 dark:text-white")}>
+                                            {Math.min(result.score * 2, 100)}
+                                        </div>
+                                        <span className="absolute -top-4 -right-8 bg-slate-900 text-white text-[10px] px-2 py-1 rounded">{t.apkScanner.riskScore}</span>
+                                    </div>
+
+                                    <div className="space-y-2">
+                                        <h2 className={cn("text-2xl font-bold uppercase tracking-widest",
+                                            result.level.includes("CRITICAL") ? "text-red-600" : result.level.includes("High") ? "text-orange-500" : "text-green-500"
+                                        )}>
+                                            {result.level}
+                                        </h2>
+                                        <p className="text-slate-500">{t.apkScanner.threatAssess}</p>
+                                    </div>
+
+                                    {result.advice.length > 0 && (
+                                        <div className="bg-slate-50 dark:bg-slate-800/50 p-4 rounded-xl text-left text-sm space-y-3 border">
+                                            {result.advice.map((line, i) => (
+                                                <div key={i} className="flex gap-2 items-start text-slate-700 dark:text-slate-300">
+                                                    <ShieldCheck className="h-5 w-5 shrink-0 text-blue-500" />
+                                                    <span>{line}</span>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    )}
+
+                                    {panicMode ? (
+                                        <Button variant="destructive" className="w-full text-lg animate-pulse" asChild>
+                                            <a href="/dashboard">{t.apkScanner.report}</a>
+                                        </Button>
+                                    ) : (
+                                        <Button variant="secondary" className="w-full" onClick={() => { setSelectedPermissions([]); setResult(null); }}>
+                                            {t.apkScanner.scanAnother}
+                                        </Button>
+                                    )}
+                                </div>
+                            ) : (
+                                <>
+                                    <div className="bg-slate-100 p-6 rounded-full mb-4 dark:bg-slate-800">
+                                        <Lock className="h-12 w-12 text-slate-400" />
+                                    </div>
+                                    <h3 className="text-xl font-bold text-slate-700 dark:text-slate-300">{t.toolsIndex?.apkTitle || "Ready to Scan"}</h3>
+                                    <p className="text-sm text-center mt-2 max-w-xs">
+                                        {t.apkScanner?.subtitle || "Select permissions to start."}
+                                    </p>
+                                </>
+                            )}
                         </div>
-                    )}
+                    </div>
                 </div>
             </div>
         </div>

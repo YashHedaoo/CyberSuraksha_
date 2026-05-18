@@ -16,9 +16,14 @@ import {
 } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-// import { toast } from "sonner" // Removed as requested
+import { useLanguage } from "@/context/language-context"
+
+function CheckBadge() {
+    return <div className="bg-blue-100 dark:bg-blue-900 p-1 rounded-full shrink-0"><Shield className="h-3 w-3 text-blue-600 dark:text-blue-300" /></div>
+}
 
 export default function CommunityPage() {
+    const { t } = useLanguage()
     const [familyMembers, setFamilyMembers] = useState<{ name: string, phone: string }[]>([
         { name: "Mom", phone: "98765*****" }
     ])
@@ -47,10 +52,10 @@ export default function CommunityPage() {
                         <Button variant="ghost" asChild size="icon">
                             <Link href="/"><ArrowLeft className="h-5 w-5" /></Link>
                         </Button>
-                        <h1 className="text-xl font-bold">Community Shield</h1>
+                        <h1 className="text-xl font-bold">{t.community.title}</h1>
                     </div>
                     <div className="flex gap-2">
-                        <Badge variant="outline" className="bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-100 border-green-200">24k Active Guardians</Badge>
+                        <Badge variant="outline" className="bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-100 border-green-200">24k {t.community.guardians}</Badge>
                     </div>
                 </div>
             </header>
@@ -61,40 +66,40 @@ export default function CommunityPage() {
                 <section>
                     <div className="flex items-center gap-2 mb-4">
                         <Heart className="text-red-500 h-6 w-6" />
-                        <h2 className="text-2xl font-bold">Suraksha Bandhan (Family Safety)</h2>
+                        <h2 className="text-2xl font-bold">{t.community.family.title}</h2>
                     </div>
                     <Card className="bg-gradient-to-r from-pink-50 to-red-50 dark:from-pink-950/20 dark:to-red-950/20 border-pink-200 dark:border-pink-900">
                         <CardContent className="p-6">
                             <div className="md:flex items-center justify-between gap-6 mb-6">
                                 <div className="space-y-2">
-                                    <h3 className="text-xl font-semibold text-pink-900 dark:text-pink-100">Protect Your Elders</h3>
+                                    <h3 className="text-xl font-semibold text-pink-900 dark:text-pink-100">{t.community.family.protect}</h3>
                                     <p className="text-pink-700 dark:text-pink-300 max-w-xl">
-                                        Link your parents' devices. If they receive a suspicious SMS or try to pay a blacklisted UPI ID, you will get an instant alert to intervene.
+                                        {t.community.family.protectDesc}
                                     </p>
                                 </div>
                                 <Dialog open={openAdd} onOpenChange={setOpenAdd}>
                                     <DialogTrigger asChild>
                                         <Button className="mt-4 md:mt-0 bg-pink-600 hover:bg-pink-700 text-white min-w-[200px] shadow-lg shadow-pink-500/20">
-                                            <Plus className="mr-2 h-4 w-4" /> Add Family Member
+                                            <Plus className="mr-2 h-4 w-4" /> {t.community.family.addBtn}
                                         </Button>
                                     </DialogTrigger>
                                     <DialogContent>
                                         <DialogHeader>
-                                            <DialogTitle>Add Family Member</DialogTitle>
+                                            <DialogTitle>{t.community.family.addBtn}</DialogTitle>
                                             <DialogDescription>
-                                                They will receive an SMS verification link to grant you 'Guardian' access.
+                                                {t.community.family.protectDesc}
                                             </DialogDescription>
                                         </DialogHeader>
                                         <div className="space-y-4 py-4">
                                             <div className="space-y-2">
-                                                <Label>Nickname</Label>
+                                                <Label>{t.community.family.nickname}</Label>
                                                 <Input placeholder="e.g. Dad" value={newMember.name} onChange={e => setNewMember({ ...newMember, name: e.target.value })} />
                                             </div>
                                             <div className="space-y-2">
-                                                <Label>Phone Number</Label>
+                                                <Label>{t.community.family.phone}</Label>
                                                 <Input placeholder="+91 98xxx xxxxx" value={newMember.phone} onChange={e => setNewMember({ ...newMember, phone: e.target.value })} />
                                             </div>
-                                            <Button className="w-full bg-pink-600 hover:bg-pink-700" onClick={handleAddMember}>Send Invite</Button>
+                                            <Button className="w-full bg-pink-600 hover:bg-pink-700" onClick={handleAddMember}>{t.community.family.sendInvite}</Button>
                                         </div>
                                     </DialogContent>
                                 </Dialog>
@@ -133,22 +138,22 @@ export default function CommunityPage() {
                     <section>
                         <div className="flex items-center gap-2 mb-4">
                             <Shield className="text-blue-500 h-6 w-6" />
-                            <h2 className="text-2xl font-bold">Micro-Cyber Insurance</h2>
+                            <h2 className="text-2xl font-bold">{t.community.insurance.title}</h2>
                         </div>
                         <Card className="h-full border-blue-200 dark:border-blue-900 shadow-md transition-shadow hover:shadow-xl relative overflow-hidden group">
                             <div className="absolute top-0 right-0 bg-blue-600 text-white text-xs font-bold px-3 py-1 rounded-bl-lg">Partnered with SBI General</div>
                             <CardHeader>
-                                <CardTitle className="text-3xl font-black text-blue-600">₹99<span className="text-sm font-normal text-muted-foreground">/year</span></CardTitle>
-                                <CardDescription>Coverage up to ₹25,000 for UPI Fraud</CardDescription>
+                                <CardTitle className="text-3xl font-black text-blue-600">{t.community.insurance.price}</CardTitle>
+                                <CardDescription>{t.community.insurance.coverage}</CardDescription>
                             </CardHeader>
                             <CardContent className="space-y-6">
                                 <ul className="space-y-3">
-                                    <li className="flex items-center gap-2 text-sm"><CheckBadge /> 24x7 Legal Helpline & FIR Support</li>
-                                    <li className="flex items-center gap-2 text-sm"><CheckBadge /> Instant Claim for QR Code Frauds</li>
-                                    <li className="flex items-center gap-2 text-sm"><CheckBadge /> Identity Theft Restoration</li>
+                                    {t.community.insurance.features.map((feature, i) => (
+                                        <li key={i} className="flex items-center gap-2 text-sm"><CheckBadge /> {feature}</li>
+                                    ))}
                                 </ul>
                                 <Button className="w-full bg-blue-600 hover:bg-blue-700 shadow-lg shadow-blue-900/20" onClick={handleBuyInsurance}>
-                                    Protect Now
+                                    {t.community.insurance.buy}
                                 </Button>
                                 <p className="text-xs text-center text-muted-foreground">T&C Apply. IRDAI Reg No. 123</p>
                             </CardContent>
@@ -159,7 +164,7 @@ export default function CommunityPage() {
                     <section>
                         <div className="flex items-center gap-2 mb-4">
                             <Radio className="text-orange-500 h-6 w-6 animate-pulse" />
-                            <h2 className="text-2xl font-bold">Mandi News (Live Feed)</h2>
+                            <h2 className="text-2xl font-bold">{t.community.feed.title}</h2>
                         </div>
                         <Card className="h-full border-orange-200 dark:border-orange-900">
                             <CardContent className="p-0">
@@ -184,7 +189,7 @@ export default function CommunityPage() {
                                     ))}
                                 </div>
                                 <div className="p-2 border-t bg-muted/20 text-center">
-                                    <Button variant="link" className="text-xs h-auto p-0 text-orange-600">Report Local Incident</Button>
+                                    <Button variant="link" className="text-xs h-auto p-0 text-orange-600">{t.community.feed.report}</Button>
                                 </div>
                             </CardContent>
                         </Card>
@@ -193,8 +198,4 @@ export default function CommunityPage() {
             </main>
         </div>
     )
-}
-
-function CheckBadge() {
-    return <div className="bg-blue-100 dark:bg-blue-900 p-1 rounded-full shrink-0"><Shield className="h-3 w-3 text-blue-600 dark:text-blue-300" /></div>
 }

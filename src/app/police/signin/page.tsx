@@ -44,7 +44,7 @@ export default function PoliceSignInPage() {
               <p>
                 <strong>Secure Environment:</strong> All actions are logged and audited.
                 <br />
-                <span className="text-xs opacity-70">{t.auth.demoMode}</span>
+                <span className="text-xs opacity-70">Official Access Portal</span>
               </p>
             </div>
           </div>

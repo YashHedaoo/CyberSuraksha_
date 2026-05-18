@@ -6,7 +6,6 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Shield, Lock, FileText, BarChart, Users, ArrowRight, ShieldAlert, Cpu, Globe, CheckCircle, Siren, MessageSquare, Clock, Phone, XCircle } from "lucide-react"
 import Link from "next/link"
-import { PanicFreeze } from "@/components/panic-freeze"
 import { Language } from "@/lib/translations"
 import { useLanguage } from "@/context/language-context"
 import { useSeniorMode } from "@/context/senior-mode-context"
@@ -553,7 +552,7 @@ export default function HomePage() {
                     {t.safetyDesc}
                   </p>
                   <Button asChild variant="outline" className="w-full">
-                    <Link href="/safety">{t.learnMore}</Link>
+                    <Link href="/safety-resources">{t.learnMore}</Link>
                   </Button>
                 </div>
               </CardContent>
@@ -595,17 +594,17 @@ export default function HomePage() {
               <h3 className="font-semibold mb-4">{t.services}</h3>
               <ul className="space-y-2 text-sm text-muted-foreground">
                 <li>
-                  <Link href="/file-complaint" className="hover:text-foreground">
+                  <Link href="/emergency-report" className="hover:text-foreground">
                     {t.fileComplaint}
                   </Link>
                 </li>
                 <li>
-                  <Link href="/dashboard" className="hover:text-foreground">
+                  <Link href="/signin" className="hover:text-foreground">
                     {t.dashboard}
                   </Link>
                 </li>
                 <li>
-                  <Link href="/ai-assistant" className="hover:text-foreground">
+                  <Link href="/signin" className="hover:text-foreground">
                     {t.aiAssistantFooter}
                   </Link>
                 </li>
@@ -615,7 +614,7 @@ export default function HomePage() {
               <h3 className="font-semibold mb-4">{t.resources}</h3>
               <ul className="space-y-2 text-sm text-muted-foreground">
                 <li>
-                  <Link href="/safety" className="hover:text-foreground">
+                  <Link href="/safety-resources" className="hover:text-foreground">
                     {t.safetyTips}
                   </Link>
                 </li>

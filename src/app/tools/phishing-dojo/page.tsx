@@ -1,372 +1,298 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect, useRef } from "react"
 import { motion, AnimatePresence } from "framer-motion"
-import { X, Check, Info, RefreshCw, Trophy } from "lucide-react"
+import { ArrowLeft, Send, ShieldAlert, ShieldCheck, Trophy, Volume2, VolumeX, AlertTriangle, User, RefreshCw } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import { Progress } from "@/components/ui/progress"
 import { Card, CardContent } from "@/components/ui/card"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import Confetti from "react-confetti"
 import { useWindowSize } from "react-use"
+import Link from "next/link"
+import { useLevel } from "@/context/level-context"
+import { Progress } from "@/components/ui/progress"
 
-// --- EXTENSIVE QUESTION BANK (20 Real-World Scenarios) ---
-const QUESTIONS = [
-    {
-        id: 1,
-        type: "scam",
-        image: "https://placehold.co/600x400/png?text=SMS:+Your+SBI+Account+Blocked!+Update+KYC+at+http://sbi-kyc-update.com",
-        text: "You receive an SMS claiming your SBI account is blocked. The link says 'sbi-kyc-update.com'.",
-        explanation: "Banks never ask for KYC updates via SMS links. The URL 'sbi-kyc-update.com' is fake; the official site is 'sbi.co.in'.",
-        difficulty: "Easy"
-    },
-    {
-        id: 2,
-        type: "safe",
-        image: "https://placehold.co/600x400/png?text=Email+from+no-reply@amazon.in+Order+Confirmation",
-        text: "An email from 'no-reply@amazon.in' confirming your recent order. You can view it in 'Your Orders' on the app.",
-        explanation: "This is likely safe. The domain is correct (@amazon.in) and it directs you to check the official app rather than clicking a suspicious link.",
-        difficulty: "Easy"
-    },
-    {
-        id: 3,
-        type: "scam",
-        image: "https://placehold.co/600x400/png?text=WhatsApp:+Part-time+Job+Offer+Rs+5000/day",
-        text: "A WhatsApp message from an unknown number offering a 'Part-time Job' liking YouTube videos for ₹5,000/day.",
-        explanation: "This is a classic 'Task Scam'. No legitimate company pays huge sums for liking videos via casual WhatsApp messages.",
-        difficulty: "Medium"
-    },
-    {
-        id: 4,
-        type: "scam",
-        image: "https://placehold.co/600x400/png?text=PhonePe+Cashback+Rs+2000+Enter+PIN+to+Receive",
-        text: "A notification says 'You received ₹2,000 Cashback!'. When you tap, it asks for your UPI PIN to 'Receive' the money.",
-        explanation: "You NEVER need to enter a UPI PIN to RECEIVE money. PIN is only for SENDING money. This is a scam.",
-        difficulty: "Medium"
-    },
-    {
-        id: 5,
-        type: "safe",
-        image: "https://placehold.co/600x400/png?text=IT+Dept+SMS:+Filing+Deadline+Reminder",
-        text: "An SMS from 'BP-ITDEPT' reminding you of the tax filing deadline. No links, just a reminder.",
-        explanation: "Government alerts often come from header IDs (like BP-ITDEPT). Since it has no malicious link and asks for nothing, it's a safe informational alert.",
-        difficulty: "Hard"
-    },
-    {
-        id: 6,
-        type: "scam",
-        image: "https://placehold.co/600x400/png?text=Customs+Official:+Your+Parcel+Stuck+Pay+Fine",
-        text: "A call from a 'Customs Officer' claiming illegal drugs were found in a parcel addressed to you. They demand a Skype call.",
-        explanation: "This is the 'Digital Arrest' scam. Real police/customs never conduct investigations over Skype video calls.",
-        difficulty: "Hard"
-    },
-    {
-        id: 7,
-        type: "scam",
-        image: "https://placehold.co/600x400/png?text=Electricity+Bill+Unpaid+Power+Cut+Tonight",
-        text: "SMS: 'Dear User, your electricity will be cut at 9:30 PM due to unpaid bill update. Call 98XXX-XXXXX immediately.'",
-        explanation: "Electricity boards do not send threats from personal mobile numbers. They would send a formal notice.",
-        difficulty: "Easy"
-    },
-    {
-        id: 8,
-        type: "safe",
-        image: "https://placehold.co/600x400/png?text=Google+Alert:+New+Sign-in+from+Windows",
-        text: "Google Security Alert email: 'New sign-in on Windows'. You just logged in on a new PC.",
-        explanation: "This is a legitimate security feature from Google triggered by your action.",
-        difficulty: "Easy"
-    },
-    {
-        id: 9,
-        type: "scam",
-        image: "https://placehold.co/600x400/png?text=Instagram+DM:+Vote+for+me+in+contest",
-        text: "A friend DMs you on Instagram: 'Hey, I'm stuck out of my account. Can you receive a link for me and screenshot it?'",
-        explanation: "This is an Account Takeover scam. The link is actually a 'Password Reset' link for YOUR account.",
-        difficulty: "Medium"
-    },
-    {
-        id: 10,
-        type: "scam",
-        image: "https://placehold.co/600x400/png?text=OLX+Buyer:+I+will+send+QR+code+scan+to+get+money",
-        text: "You are selling a sofa on OLX. The buyer sends a QR code and says 'Scan this to receive payment'.",
-        explanation: "Scanning a QR code sends money OUT of your account. You never scan a QR to receive money.",
-        difficulty: "Medium"
-    },
-    {
-        id: 11,
-        type: "scam",
-        image: "https://placehold.co/600x400/png?text=URL:www.netflix-subscription-renew.com",
-        text: "Email: 'Your Netflix Membership is on hold'. Link: www.netflix-subscription-renew.com",
-        explanation: "Fake domain. Official Netflix domain is just 'netflix.com'.",
-        difficulty: "Easy"
-    },
-    {
-        id: 12,
-        type: "safe",
-        image: "https://placehold.co/600x400/png?text=WhatsApp+Security+Code+Changed",
-        text: "WhatsApp chat notification: 'Security code with Rahul changed'.",
-        explanation: "This happens automatically when a contact reinstalls WhatsApp or changes phones. Safe.",
-        difficulty: "Medium"
-    },
-    {
-        id: 13,
-        type: "scam",
-        image: "https://placehold.co/600x400/png?text=Telegram+Investment+Group+Double+Money",
-        text: "Added to a Telegram group 'Crypto Whale Pumps'. Admin claims 'Invest ₹10k, get ₹30k in 2 hours'.",
-        explanation: "Classic 'Pig Butchering' or Investment Scam. Unrealistic returns are always a red flag.",
-        difficulty: "Medium"
-    },
-    {
-        id: 14,
-        type: "scam",
-        image: "https://placehold.co/600x400/png?text=Facebook+Ad:+Ratan+Tata+giving+free+cars",
-        text: "Facebook Ad: 'Ratan Tata Foundation giving free Tata Nexon to first 500 clickers. Register now for ₹99.'",
-        explanation: "Fake giveaway scam using a celebrity's name. They steal the registration fee and data.",
-        difficulty: "Easy"
-    },
-    {
-        id: 15,
-        type: "safe",
-        image: "https://placehold.co/600x400/png?text=DigiLocker+OTP+SMS",
-        text: "SMS with OTP from 'AD-DIGILK' while you are trying to download your Driving License.",
-        explanation: "Legit OTP triggered by your user action.",
-        difficulty: "Easy"
-    },
-    {
-        id: 16,
-        type: "scam",
-        image: "https://placehold.co/600x400/png?text=MacOS+Popup:+Virus+Detected+Call+Support",
-        text: "A loud popup on your browser: 'YOUR COMPUTER IS INFECTED! Call Microsoft Support immediately at +1-800-XXX.'",
-        explanation: "Tech Support Scam. Microsoft does not send browser popups asking you to call them.",
-        difficulty: "Medium"
-    },
-    {
-        id: 17,
-        type: "scam",
-        image: "https://placehold.co/600x400/png?text=Dating+App:+Send+nudes+or+I+leak+chat",
-        text: "Person from Dating App moves to video call, records you, then demands money to not 'upload video to Facebook'.",
-        explanation: "Sextortion scam. Do not pay. Report immediately.",
-        difficulty: "Hard"
-    },
-    {
-        id: 18,
-        type: "safe",
-        image: "https://placehold.co/600x400/png?text=Uber+Ride+Safety+PIN",
-        text: "Uber app notification: 'Your safety PIN for this ride is 4455'.",
-        explanation: "Standard safety feature.",
-        difficulty: "Easy"
-    },
-    {
-        id: 19,
-        type: "scam",
-        image: "https://placehold.co/600x400/png?text=Credit+Card+Limit+Increase+Call",
-        text: "Caller: 'We are increasing your credit limit to 5 Lakhs. Just give card number and expiry to verify.'",
-        explanation: "Bank officials never ask for full card details or CVV to increase limits.",
-        difficulty: "Easy"
-    },
-    {
-        id: 20,
-        type: "scam",
-        image: "https://placehold.co/600x400/png?text=T-Mobile+SIM+Swap+Alert",
-        text: "You suddenly lose network signal. Then get an email that 'SIM card updated successfully'. You didn't request this.",
-        explanation: "SIM Swap attack. Hackers have stolen your number to bypass OTPs.",
-        difficulty: "Hard"
-    }
-];
+// --- SCENARIO DATA ---
+import { SCENARIO_BANK, Scenario } from "@/lib/dojo-scenarios"
 
 export default function PhishingDojoPage() {
-    const [index, setIndex] = useState(0)
-    const [score, setScore] = useState(0)
-    const [streak, setStreak] = useState(0)
-    const [lives, setLives] = useState(3)
-    const [gameState, setGameState] = useState<'intro' | 'playing' | 'gameover' | 'victory'>('intro')
-    const [feedback, setFeedback] = useState<{ result: 'correct' | 'wrong', message: string } | null>(null)
-
+    const { addXp } = useLevel()
     const { width, height } = useWindowSize()
+    const [gameState, setGameState] = useState<'intro' | 'playing' | 'gameover' | 'victory' | 'batch_complete'>('intro')
+    const [currentScenarioIndex, setCurrentScenarioIndex] = useState(0) // Global Index
+    const [batchIndex, setBatchIndex] = useState(0) // Current batch (0-4)
+    const [walletBalance, setWalletBalance] = useState(50000)
+    const [messages, setMessages] = useState<{ id: number, text: string, sender: 'bot' | 'user' }[]>([])
+    const [feedback, setFeedback] = useState<{ type: 'win' | 'loss', message: string, cost?: number } | null>(null)
+    const scrollRef = useRef<HTMLDivElement>(null)
+    const [isTyping, setIsTyping] = useState(false)
 
-    const currentQ = QUESTIONS[index]
-    const progress = ((index) / QUESTIONS.length) * 100
+    const BATCH_SIZE = 5
+    const scenarios = SCENARIO_BANK
+    const currentScenario = scenarios[currentScenarioIndex]
+    const currentBatchStart = Math.floor(currentScenarioIndex / BATCH_SIZE) * BATCH_SIZE
+    const currentBatchProgress = currentScenarioIndex - currentBatchStart
 
-    const handleDecision = (decision: 'safe' | 'scam') => {
-        const isCorrect = decision === currentQ.type
+    // Auto-scroll to bottom
+    useEffect(() => {
+        if (scrollRef.current) {
+            scrollRef.current.scrollIntoView({ behavior: 'smooth' })
+        }
+    }, [messages, isTyping])
 
-        if (isCorrect) {
-            setScore(s => s + 100 + (streak * 10))
-            setStreak(s => s + 1)
-            setFeedback({ result: 'correct', message: "Good eye! " + currentQ.explanation })
+    // Load initial scenario message
+    useEffect(() => {
+        if (gameState === 'playing' && !feedback && currentScenario) { // Added currentScenario check
+            setIsTyping(true)
+            const timeout = setTimeout(() => {
+                setIsTyping(false)
+                setMessages([{
+                    id: Date.now(),
+                    text: currentScenario.initialMessage,
+                    sender: 'bot'
+                }])
+            }, 1000)
+            return () => clearTimeout(timeout)
+        }
+    }, [gameState, currentScenarioIndex, feedback, currentScenario]) // Added currentScenario to dependencies
+
+    const handleOptionSelect = (option: typeof SCENARIO_BANK[0]['options'][0]) => { // Changed type to SCENARIO_BANK
+        // 1. Add User Message
+        setMessages(prev => [...prev, { id: Date.now(), text: option.text, sender: 'user' }])
+
+        // 2. Process Outcome
+        if (option.outcome === 'safe') {
+            setTimeout(() => {
+                setFeedback({ type: 'win', message: option.feedback })
+                addXp(20, `Dojo: ${currentScenario.sender.role} Scenario Passed`)
+            }, 500)
         } else {
-            setStreak(0)
-            setLives(l => l - 1)
-            setFeedback({ result: 'wrong', message: "Oops! " + currentQ.explanation })
+            setTimeout(() => {
+                const lostAmount = option.cost || 1000
+                setWalletBalance(prev => Math.max(0, prev - lostAmount))
+                setFeedback({ type: 'loss', message: option.feedback, cost: lostAmount })
+            }, 500)
         }
     }
 
-    const nextQuestion = () => {
+    const nextScenario = () => {
         setFeedback(null)
-        if (lives <= 0) {
+        setMessages([])
+
+        if (walletBalance <= 0) {
             setGameState('gameover')
-            updateGlobalScore(score)
-        } else if (index + 1 >= QUESTIONS.length) {
+            return
+        }
+
+        if (currentScenarioIndex + 1 >= scenarios.length) {
             setGameState('victory')
-            updateGlobalScore(score + 1000) // Bonus
+            addXp(200, "Dojo Grandmaster")
+        } else if ((currentScenarioIndex + 1) % BATCH_SIZE === 0) {
+            setGameState('batch_complete')
+            addXp(50, `Completed Batch ${Math.floor(currentScenarioIndex / BATCH_SIZE) + 1}`)
         } else {
-            setIndex(prev => prev + 1)
+            setCurrentScenarioIndex(prev => prev + 1)
         }
     }
 
-    const updateGlobalScore = (newScore: number) => {
-        // Persist score for dashboard widget
-        const currentMax = parseInt(localStorage.getItem("dojo_score") || "0")
-        if (newScore > currentMax) {
-            localStorage.setItem("dojo_score", newScore.toString())
-        }
-    }
-
-    const restart = () => {
-        setIndex(0)
-        setScore(0)
-        setStreak(0)
-        setLives(3)
+    const startNextBatch = () => {
+        setCurrentScenarioIndex(prev => prev + 1)
         setFeedback(null)
+        setMessages([])
         setGameState('playing')
     }
 
-    // --- RENDER STATES ---
+    const restartGame = () => {
+        setWalletBalance(50000)
+        setCurrentScenarioIndex(0)
+        setBatchIndex(0) // Reset batch index on restart
+        setFeedback(null)
+        setMessages([])
+        setGameState('playing')
+    }
 
     if (gameState === 'intro') {
         return (
-            <div className="min-h-screen flex items-center justify-center p-4 bg-slate-950 text-white">
-                <Card className="max-w-md w-full bg-slate-900 border-slate-800 text-center p-6 space-y-6">
-                    <div className="text-6xl mb-4">🥋</div>
-                    <h1 className="text-3xl font-black text-yellow-500">PHISHING DOJO</h1>
-                    <p className="text-slate-400">Master the art of spotting scams.<br />Swipe LEFT for SCAM, RIGHT for SAFE.</p>
-
-                    <div className="grid grid-cols-2 gap-4 text-sm font-mono text-slate-300">
-                        <div className="bg-slate-800 p-3 rounded">20 Scenarios</div>
-                        <div className="bg-slate-800 p-3 rounded">Real World</div>
+            <div className="min-h-screen bg-slate-950 flex items-center justify-center p-4 font-sans bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] bg-fixed text-white">
+                <Card className="max-w-md w-full bg-slate-900 border-slate-700 shadow-2xl overflow-hidden">
+                    <div className="h-40 bg-gradient-to-br from-purple-600 to-indigo-600 flex items-center justify-center">
+                        <div className="text-6xl animate-bounce">🥋</div>
                     </div>
-
-                    <Button onClick={() => setGameState('playing')} className="w-full h-12 text-lg font-bold bg-yellow-500 hover:bg-yellow-600 text-black">
-                        ENTER DOJO
-                    </Button>
+                    <CardContent className="p-8 text-center space-y-6">
+                        <h1 className="text-3xl font-black tracking-tight text-white">PHISHING DOJO 2.0</h1>
+                        <p className="text-slate-300">
+                            Enter the Cyber Defense Training to sharpen your instincts. <br />
+                            You have <span className="text-green-400 font-bold">₹50,000</span> in your virtual wallet.
+                            Defend your assets against live scam attempts.
+                        </p>
+                        <Button size="lg" className="w-full text-lg font-bold bg-purple-600 hover:bg-purple-700" onClick={() => setGameState('playing')}>
+                            START DEFENSE TRAINING
+                        </Button>
+                    </CardContent>
                 </Card>
             </div>
         )
     }
 
-    if (gameState === 'gameover' || gameState === 'victory') {
+    if (gameState === 'gameover') {
         return (
-            <div className="min-h-screen flex items-center justify-center p-4 bg-slate-950 text-white relative overflow-hidden">
-                {gameState === 'victory' && <Confetti width={width} height={height} numberOfPieces={200} />}
-
-                <Card className="max-w-md w-full bg-slate-900 border-slate-800 text-center p-8 space-y-6 relative z-10">
-                    <div className="text-6xl animate-bounce">
-                        {gameState === 'victory' ? '🏆' : '💀'}
+            <div className="min-h-screen bg-red-950 flex items-center justify-center p-4 text-white text-center">
+                <div className="space-y-6 animate-in zoom-in duration-300">
+                    <div className="text-8xl">💸</div>
+                    <h1 className="text-5xl font-black">BANKRUPT!</h1>
+                    <p className="text-xl">You lost all your money to scammers.</p>
+                    <Button variant="secondary" size="lg" onClick={restartGame}>Try Again</Button>
+                    <div className="pt-4">
+                        <Button variant="link" className="text-white/50" asChild><Link href="/">Exit to Safety</Link></Button>
                     </div>
-                    <h1 className="text-3xl font-black">
-                        {gameState === 'victory' ? "CYBER MASTER!" : "SCAMMED!"}
-                    </h1>
-                    <div className="space-y-2">
-                        <p className="text-sm text-slate-400">Final Score</p>
-                        <p className="text-5xl font-mono text-blue-400">{score}</p>
-                    </div>
-
-                    <Button onClick={restart} variant="outline" className="w-full h-12 text-lg border-slate-700 hover:bg-slate-800">
-                        <RefreshCw className="mr-2 h-5 w-5" /> Try Again
-                    </Button>
-
-                    <Button variant="ghost" className="w-full" asChild>
-                        <a href="/dashboard">Back to Dashboard</a>
-                    </Button>
-                </Card>
+                </div>
             </div>
         )
     }
 
-    // --- GAMEPLAY UI ---
+    if (gameState === 'batch_complete') {
+        return (
+            <div className="min-h-screen bg-indigo-950 flex items-center justify-center p-4 text-white text-center">
+                <Confetti width={width} height={height} numberOfPieces={100} recycle={false} />
+                <div className="space-y-6 animate-in zoom-in duration-300">
+                    <Trophy className="h-24 w-24 text-yellow-400 mx-auto" />
+                    <h1 className="text-4xl font-black text-yellow-400">BATCH CLEARED!</h1>
+                    <p className="text-xl">Wallet Balance: <span className="font-mono font-bold text-green-400">₹{walletBalance.toLocaleString('en-IN')}</span></p>
+                    <p className="text-indigo-200">Get ready for the next wave of scammers.</p>
+                    <Button className="bg-white text-indigo-900 hover:bg-slate-200 font-bold text-lg px-8" onClick={startNextBatch}>
+                        Start Wave {Math.floor(currentScenarioIndex / BATCH_SIZE) + 1}
+                    </Button>
+                </div>
+            </div>
+        )
+    }
+
+    if (gameState === 'victory') {
+        return (
+            <div className="min-h-screen bg-green-950 flex items-center justify-center p-4 text-white text-center">
+                <Confetti width={width} height={height} numberOfPieces={300} recycle={false} />
+                <div className="space-y-6 animate-in zoom-in duration-300">
+                    <Trophy className="h-32 w-32 text-yellow-400 mx-auto" />
+                    <h1 className="text-5xl font-black text-yellow-400">MISSION SURVIVED!</h1>
+                    <p className="text-2xl">Wallet Balance: <span className="font-mono font-bold">₹{walletBalance.toLocaleString('en-IN')}</span></p>
+                    <p className="text-green-200">You spotted every scam correctly.</p>
+                    <Button className="bg-yellow-500 hover:bg-yellow-600 text-black font-bold text-lg px-8" asChild>
+                        <Link href="/profile">View Profile Badge</Link>
+                    </Button>
+                </div>
+            </div>
+        )
+    }
+
     return (
-        <div className="min-h-screen bg-slate-100 dark:bg-slate-950 flex flex-col p-4 max-w-lg mx-auto h-screen">
-            {/* Header Stats */}
-            <div className="flex justify-between items-center bg-white dark:bg-slate-900 p-4 rounded-xl shadow-sm mb-4 border dark:border-slate-800">
-                <div className="flex flex-col">
-                    <span className="text-xs text-muted-foreground font-bold uppercase">Score</span>
-                    <span className="text-2xl font-mono font-bold text-blue-600">{score}</span>
+        <div className="max-w-md mx-auto h-screen bg-slate-100 flex flex-col relative shadow-2xl">
+            {/* Header */}
+            <div className="bg-slate-900 p-4 text-white flex items-center justify-between shadow-lg z-10">
+                <div className="flex items-center gap-3">
+                    <Link href="/"><ArrowLeft className="text-slate-400 hover:text-white" /></Link>
+                    <div className="flex items-center gap-2">
+                        <div className="relative">
+                            <Avatar>
+                                <AvatarImage src={currentScenario.sender.avatar} />
+                                <AvatarFallback>SC</AvatarFallback>
+                            </Avatar>
+                            {currentScenario.sender.online && <span className="absolute bottom-0 right-0 h-3 w-3 bg-green-500 border-2 border-slate-900 rounded-full"></span>}
+                        </div>
+                        <div>
+                            <h3 className="font-bold text-sm">{currentScenario.sender.name}</h3>
+                            <p className="text-[10px] text-slate-400 uppercase tracking-wider">{currentScenario.sender.role}</p>
+                        </div>
+                    </div>
                 </div>
-                <div className="flex gap-1">
-                    {[...Array(3)].map((_, i) => (
-                        <span key={i} className={`text-2xl transition-all ${i < lives ? 'opacity-100 scale-100' : 'opacity-20 grayscale scale-75'}`}>❤️</span>
-                    ))}
+                <div className="text-right">
+                    <div className="text-[10px] text-slate-400 uppercase">Wallet</div>
+                    <div className={`font-mono font-bold ${walletBalance < 20000 ? 'text-red-500 animate-pulse' : 'text-green-400'}`}>
+                        ₹{walletBalance.toLocaleString('en-IN')}
+                    </div>
                 </div>
             </div>
 
-            <Progress value={progress} className="h-2 mb-4" />
+            {/* Chat Area */}
+            <div className="flex-1 bg-[#e5ddd5] p-4 overflow-y-auto space-y-4 pb-32">
+                {messages.map(msg => (
+                    <motion.div
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        key={msg.id}
+                        className={`flex ${msg.sender === 'user' ? 'justify-end' : 'justify-start'}`}
+                    >
+                        <div className={`max-w-[80%] p-3 rounded-xl text-sm shadow-sm relative ${msg.sender === 'user'
+                            ? 'bg-[#dcf8c6] text-black rounded-tr-none'
+                            : 'bg-white text-black rounded-tl-none'
+                            }`}>
+                            {msg.text}
+                            <span className="text-[10px] text-gray-400 block text-right mt-1">
+                                {new Date(msg.id).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                            </span>
+                        </div>
+                    </motion.div>
+                ))}
 
-            {/* Main Card Area */}
-            <div className="flex-1 relative perspective-1000 flex flex-col justify-center">
-                <AnimatePresence mode="wait">
-                    {!feedback ? (
-                        <motion.div
-                            key={currentQ.id}
-                            initial={{ y: 20, opacity: 0 }}
-                            animate={{ y: 0, opacity: 1 }}
-                            exit={{ y: -20, opacity: 0 }}
-                            className="w-full"
-                        >
-                            <Card className="overflow-hidden shadow-2xl border-2 dark:border-slate-700 h-full max-h-[60vh] flex flex-col">
-                                <div className="bg-slate-200 dark:bg-slate-800 h-40 flex items-center justify-center shrink-0 relative overflow-hidden group">
-                                    <div className="absolute top-2 right-2 bg-black/60 text-white px-2 py-1 rounded text-xs z-10">Scenario {index + 1}/{QUESTIONS.length}</div>
-                                    {/* Placeholder for complex image */}
-                                    <div className="text-center p-4">
-                                        <div className="bg-white dark:bg-black p-4 rounded shadow-inner font-mono text-xs text-left w-64 mx-auto break-all">
-                                            {currentQ.text.substring(0, 80)}...
-                                        </div>
-                                    </div>
-                                </div>
-                                <CardContent className="p-6 flex-1 flex flex-col justify-center text-center space-y-4">
-                                    <h3 className="text-xl font-bold leading-snug">{currentQ.text}</h3>
-                                    <p className="text-sm text-muted-foreground bg-slate-100 dark:bg-slate-800 p-3 rounded-lg border border-slate-200 dark:border-slate-700">
-                                        <Info className="inline h-4 w-4 mr-1 text-blue-500 mb-0.5" />
-                                        Analyze the text/link closely.
-                                    </p>
-                                </CardContent>
-                            </Card>
-                        </motion.div>
-                    ) : (
-                        <motion.div
-                            initial={{ scale: 0.9, opacity: 0 }}
-                            animate={{ scale: 1, opacity: 1 }}
-                            className={`p-6 rounded-xl border-2 text-center shadow-xl ${feedback.result === 'correct' ? 'bg-green-50 border-green-500 text-green-900' : 'bg-red-50 border-red-500 text-red-900'}`}
-                        >
-                            <div className="text-6xl mb-4">{feedback.result === 'correct' ? '✅' : '❌'}</div>
-                            <h2 className="text-2xl font-bold mb-2">{feedback.result === 'correct' ? 'CORRECT!' : 'WRONG!'}</h2>
-                            <p className="text-lg leading-relaxed">{feedback.message}</p>
+                {isTyping && (
+                    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex justify-start">
+                        <div className="bg-white p-3 rounded-xl rounded-tl-none shadow-sm flex gap-1">
+                            <span className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></span>
+                            <span className="w-2 h-2 bg-gray-400 rounded-full animate-bounce delay-100"></span>
+                            <span className="w-2 h-2 bg-gray-400 rounded-full animate-bounce delay-200"></span>
+                        </div>
+                    </motion.div>
+                )}
+                <div ref={scrollRef} />
+            </div>
 
-                            <Button onClick={nextQuestion} size="lg" className={`mt-8 w-full font-bold text-lg ${feedback.result === 'correct' ? 'bg-green-600 hover:bg-green-700' : 'bg-red-600 hover:bg-red-700 text-white'}`}>
-                                {index + 1 >= QUESTIONS.length ? 'Finish Training' : 'Next Scenario'}
+            {/* Controls / Options */}
+            <div className="bg-slate-50 border-t p-4 absolute bottom-0 w-full z-20">
+                {!feedback ? (
+                    <div className="grid grid-cols-1 gap-3">
+                        {currentScenario.options.map((opt, i) => (
+                            <Button
+                                key={i}
+                                variant="outline"
+                                className="h-auto py-3 px-4 text-left justify-start whitespace-normal border-slate-300 hover:bg-blue-50 hover:text-blue-700 hover:border-blue-300 transition-all font-medium"
+                                onClick={() => handleOptionSelect(opt)}
+                                disabled={isTyping}
+                            >
+                                <span className="mr-3 font-bold text-slate-400">{String.fromCharCode(65 + i)}</span>
+                                {opt.text}
                             </Button>
-                        </motion.div>
-                    )}
-                </AnimatePresence>
+                        ))}
+                    </div>
+                ) : (
+                    <motion.div
+                        initial={{ y: 50, opacity: 0 }}
+                        animate={{ y: 0, opacity: 1 }}
+                        className={`p-4 rounded-xl text-center space-y-3 shadow-lg ${feedback.type === 'win' ? 'bg-green-100 border-2 border-green-500 text-green-900' : 'bg-red-100 border-2 border-red-500 text-red-900'}`}
+                    >
+                        <div className="font-black text-2xl uppercase flex items-center justify-center gap-2">
+                            {feedback.type === 'win' ? <><ShieldCheck /> SCAM BLOCKED</> : <><AlertTriangle /> SCAMMED!</>}
+                        </div>
+                        <p className="font-medium text-sm">{feedback.message}</p>
+                        {feedback.cost && (
+                            <div className="text-xl font-bold text-red-600">
+                                - ₹{feedback.cost.toLocaleString('en-IN')}
+                            </div>
+                        )}
+                        <Button className={`w-full font-bold ${feedback.type === 'win' ? 'bg-green-600 hover:bg-green-700' : 'bg-red-600 hover:bg-red-700'}`} onClick={nextScenario}>
+                            Next Scenario
+                        </Button>
+                    </motion.div>
+                )}
             </div>
 
-            {/* Controls */}
-            {!feedback && (
-                <div className="grid grid-cols-2 gap-4 mt-6">
-                    <Button
-                        variant="outline"
-                        className="h-16 text-xl border-red-500 text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 bg-white dark:bg-slate-900 shadow-sm"
-                        onClick={() => handleDecision('scam')}
-                    >
-                        <X className="mr-2 h-6 w-6" /> SCAM
-                    </Button>
-                    <Button
-                        variant="outline"
-                        className="h-16 text-xl border-green-500 text-green-600 hover:bg-green-50 dark:hover:bg-green-900/20 bg-white dark:bg-slate-900 shadow-sm"
-                        onClick={() => handleDecision('safe')}
-                    >
-                        <Check className="mr-2 h-6 w-6" /> SAFE
-                    </Button>
-                </div>
-            )}
+            {/* Progress Bar Top */}
+            <div className="absolute top-[72px] left-0 w-full h-1 bg-slate-200">
+                <motion.div
+                    className="h-full bg-purple-600"
+                    initial={{ width: 0 }}
+                    animate={{ width: `${((currentBatchProgress) / BATCH_SIZE) * 100}%` }}
+                />
+            </div>
         </div>
     )
 }
+

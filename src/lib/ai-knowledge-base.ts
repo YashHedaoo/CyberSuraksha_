@@ -90,7 +90,7 @@ export const getAIResponse = (input: string): AIResponse => {
                 : "Timely reporting is key."
 
         return {
-            text: `I understand you are facing a case of ${matchedStatute.crimeType}. ${refundChanceText}\n\nAccording to ${matchedStatute.sourceUrl ? 'official sources' : 'law'}, this is a punishable offense.`,
+            text: `I understand you are facing a case of ${matchedStatute.crimeType}. ${refundChanceText}\n\nAccording to law, this is a punishable offense.`,
             legalInfo: matchedStatute,
             steps: [
                 "Call 1930 immediately (National Cyber Crime Helpline).",

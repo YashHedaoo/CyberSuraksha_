@@ -3,7 +3,6 @@
 import { useEffect, useState } from "react"
 import { motion } from "framer-motion"
 import { ShieldCheck, AlertOctagon, Activity } from "lucide-react"
-import { PanicFreeze } from "@/components/panic-freeze"
 
 export function CyberHero({ children }: { children?: React.ReactNode }) {
     const [threatLevel, setThreatLevel] = useState("Low")
@@ -33,10 +32,7 @@ export function CyberHero({ children }: { children?: React.ReactNode }) {
             {/* Content Layer */}
             <div className="relative z-10 mx-auto max-w-3xl glassy rounded-3xl p-10 text-center space-y-8 border-t border-white/20 shadow-2xl">
 
-                {/* Panic Button Floating */}
-                <div className="absolute top-4 right-4 z-50">
-                    <PanicFreeze />
-                </div>
+                {/* Panic Button Removed */}
 
                 {/* Status Pill */}
                 <motion.div

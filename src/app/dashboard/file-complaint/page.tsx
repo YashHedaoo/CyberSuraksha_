@@ -1,9 +1,10 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import { useAuth } from "@/context/auth-context"
 import { useLanguage } from "@/context/language-context"
+import { useVoiceGuidance } from "@/hooks/use-voice-guidance"
 import { api } from "@/lib/api"
 import { Complaint } from "@/lib/types"
 import { Button } from "@/components/ui/button"
@@ -30,6 +31,23 @@ export default function FileComplaintPage() {
         location: "",
         incidentDate: new Date().toISOString().split('T')[0],
     })
+
+    const { speak } = useVoiceGuidance()
+
+    useEffect(() => {
+        // Voice Welcome on Mount
+        const welcomeMsg = "I am here to help. Take your time. Please tell me what happened."
+        speak(welcomeMsg)
+    }, [speak])
+
+    useEffect(() => {
+        // Voice Guidance per step
+        if (step === 1) speak("First, select the type of incident and how urgent it is.")
+        if (step === 2) speak("Describe the incident in detail. You can title it for reference.")
+        if (step === 3) speak("When and where did this happen? This helps us track the criminal.")
+        if (step === 4) speak("If you have screenshots or recordings, please attach them now.")
+        if (step === 5) speak("Please review your report carefully before submitting.")
+    }, [step, speak])
 
     const STEPS = [
         { id: 1, name: t.complaint.steps.category, icon: ShieldAlert },
@@ -132,7 +150,7 @@ export default function FileComplaintPage() {
                         <div className="space-y-3">
                             <div className="flex justify-between items-center">
                                 <Label htmlFor="desc">Detailed Description</Label>
-                                <VoiceInput onTranscript={(text) => handleChange("description", (formData.description || "") + " " + text)} />
+                                <VoiceInput onResult={(text) => handleChange("description", (formData.description || "") + " " + text)} />
                             </div>
                             <Textarea
                                 id="desc"

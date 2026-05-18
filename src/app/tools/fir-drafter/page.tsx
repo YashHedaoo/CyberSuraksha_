@@ -9,10 +9,26 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Textarea } from "@/components/ui/textarea"
 import { FileText, Download, Printer, Shield } from "lucide-react"
 
+import { useLanguage } from "@/context/language-context"
+import { VoiceInput } from "@/components/voice-input"
+
 export default function FIRDrafterPage() {
-    const [step, setStep] = useState(1)
+    const { t } = useLanguage()
     const [generating, setGenerating] = useState(false)
     const [generated, setGenerated] = useState(false)
+
+    // Form State
+    const [formData, setFormData] = useState({
+        name: "",
+        address: "",
+        city: "",
+        incidentDate: "",
+        incidentTime: "",
+        type: "financial",
+        amount: "",
+        suspect: "",
+        desc: ""
+    })
 
     const handleGenerate = () => {
         setGenerating(true)
@@ -23,100 +39,203 @@ export default function FIRDrafterPage() {
     }
 
     return (
-        <div className="container mx-auto py-10 max-w-3xl">
-            <div className="mb-8 text-center">
-                <h1 className="text-3xl font-bold mb-2 flex items-center justify-center gap-2">
-                    <FileText className="h-8 w-8 text-primary" /> AI FIR Drafter
+        <div className="container mx-auto py-10 max-w-4xl">
+            <div className="mb-8 text-center space-y-4">
+                <h1 className="text-4xl font-bold flex items-center justify-center gap-3">
+                    <FileText className="h-10 w-10 text-primary" /> {t.firDrafter.title}
                 </h1>
-                <p className="text-muted-foreground">
-                    Generate a legally compliant police complaint (FIR Application) in seconds.
-                    <br /><span className="text-xs text-amber-600 font-bold bg-amber-50 px-2 py-1 rounded mt-2 inline-block">Cites BNS 2023 & IT Act 2000 automatically</span>
+                <p className="text-muted-foreground text-lg">
+                    {t.firDrafter.subtitle}
                 </p>
             </div>
 
             {!generated ? (
-                <Card>
+                <Card className="border-2">
                     <CardHeader>
-                        <CardTitle>Incident Details</CardTitle>
-                        <CardDescription>Enter the key facts. The AI will format them into legal language.</CardDescription>
+                        <CardTitle>{t.firDrafter.form.personalTitle}</CardTitle>
+                        <CardDescription>{t.firDrafter.form.desc}</CardDescription>
                     </CardHeader>
-                    <CardContent className="space-y-4">
+                    <CardContent className="space-y-6">
+                        {/* Personal Info */}
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div className="space-y-2">
-                                <Label>Select Incident Type</Label>
-                                <Select>
-                                    <SelectTrigger><SelectValue placeholder="Select type..." /></SelectTrigger>
+                                <Label>{t.firDrafter.form.name}</Label>
+                                <Input
+                                    placeholder="Amit Kumar"
+                                    value={formData.name}
+                                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                                />
+                            </div>
+                            <div className="space-y-2">
+                                <Label>{t.firDrafter.form.address}</Label>
+                                <Input
+                                    placeholder="Sector 4, Rohini, Delhi"
+                                    value={formData.address}
+                                    onChange={(e) => setFormData({ ...formData, address: e.target.value })}
+                                />
+                            </div>
+                        </div>
+
+                        {/* Incident Info */}
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div className="space-y-2">
+                                <Label>{t.firDrafter.form.date}</Label>
+                                <Input
+                                    type="date"
+                                    value={formData.incidentDate}
+                                    onChange={(e) => setFormData({ ...formData, incidentDate: e.target.value })}
+                                />
+                            </div>
+                            <div className="space-y-2">
+                                <Label>{t.firDrafter.form.time}</Label>
+                                <Input
+                                    type="time"
+                                    value={formData.incidentTime}
+                                    onChange={(e) => setFormData({ ...formData, incidentTime: e.target.value })}
+                                />
+                            </div>
+                            <div className="space-y-2">
+                                <Label>{t.firDrafter.form.city}</Label>
+                                <Input
+                                    placeholder="Mumbai"
+                                    value={formData.city}
+                                    onChange={(e) => setFormData({ ...formData, city: e.target.value })}
+                                />
+                            </div>
+                        </div>
+
+                        {/* Cyber Specifics */}
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div className="space-y-2">
+                                <Label>{t.firDrafter.form.type}</Label>
+                                <Select onValueChange={(v) => setFormData({ ...formData, type: v })}>
+                                    <SelectTrigger><SelectValue placeholder={t.firDrafter.form.type} /></SelectTrigger>
                                     <SelectContent>
-                                        <SelectItem value="financial">Financial Fraud / UPI Scam</SelectItem>
-                                        <SelectItem value="stalking">Cyber Stalking / Harassment</SelectItem>
-                                        <SelectItem value="identity">Identity Theft / Fake Profile</SelectItem>
-                                        <SelectItem value="job">Fake Job Offer</SelectItem>
+                                        <SelectItem value="financial">{t.firDrafter.types.financial}</SelectItem>
+                                        <SelectItem value="stalking">{t.firDrafter.types.stalking}</SelectItem>
+                                        <SelectItem value="job">{t.firDrafter.types.job}</SelectItem>
+                                        <SelectItem value="sextortion">{t.firDrafter.types.sextortion}</SelectItem>
                                     </SelectContent>
                                 </Select>
                             </div>
                             <div className="space-y-2">
-                                <Label>Amount Lost (if any)</Label>
-                                <Input placeholder="₹ 0.00" />
+                                <Label>{t.firDrafter.form.amount}</Label>
+                                <Input
+                                    placeholder="5000"
+                                    value={formData.amount}
+                                    onChange={(e) => setFormData({ ...formData, amount: e.target.value })}
+                                />
                             </div>
                         </div>
 
                         <div className="space-y-2">
-                            <Label>Transaction ID / Suspect Number</Label>
-                            <Input placeholder="e.g. UTR 12345678 or +91 98765..." />
+                            <Label>{t.firDrafter.form.suspect}</Label>
+                            <Input
+                                placeholder="+91 98XXX..."
+                                value={formData.suspect}
+                                onChange={(e) => setFormData({ ...formData, suspect: e.target.value })}
+                            />
                         </div>
 
                         <div className="space-y-2">
-                            <Label>Description of Incident</Label>
-                            <Textarea placeholder="I received a call from..." className="min-h-[100px]" />
+                            <div className="flex justify-between items-center">
+                                <Label>{t.firDrafter.form.desc}</Label>
+                                <VoiceInput
+                                    onResult={(text) => setFormData(prev => ({ ...prev, desc: prev.desc + (prev.desc ? ' ' : '') + text }))}
+                                    className="h-8 w-8"
+                                />
+                            </div>
+                            <Textarea
+                                placeholder="..."
+                                className="min-h-[100px]"
+                                value={formData.desc}
+                                onChange={(e) => setFormData({ ...formData, desc: e.target.value })}
+                            />
                         </div>
 
-                        <Button className="w-full h-12 text-lg" onClick={handleGenerate} disabled={generating}>
-                            {generating ? "Drafting Legal Document..." : "Generate PDF"}
+                        <Button className="w-full h-12 text-lg font-bold" onClick={handleGenerate} disabled={generating}>
+                            {generating ? t.firDrafter.buttons.drafting : t.firDrafter.buttons.generate}
                         </Button>
                     </CardContent>
                 </Card>
             ) : (
-                <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4">
-                    <Card className="border-green-200 bg-green-50/50">
-                        <CardContent className="p-6 text-center text-green-800">
+                <div className="space-y-6 animate-in slide-in-from-bottom-8 duration-700">
+                    <Card className="border-green-500 bg-green-50/50 dark:bg-green-900/10">
+                        <CardContent className="p-6 text-center text-green-800 dark:text-green-400">
                             <Shield className="h-12 w-12 mx-auto text-green-600 mb-2" />
-                            <h3 className="text-xl font-bold">Document Ready!</h3>
-                            <p>Your FIR application has been drafted citing <strong>Section 318 (Cheating) of BNS 2023</strong> and <strong>Section 66D of IT Act 2000</strong>.</p>
+                            <h3 className="text-xl font-bold">{t.firDrafter.preview.ready}</h3>
+                            <p className="text-sm font-bold">{t.firDrafter.preview.legalCite}</p>
                         </CardContent>
                     </Card>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <Button variant="outline" className="h-24 flex flex-col gap-2 hover:bg-slate-100" onClick={() => window.print()}>
-                            <Printer className="h-8 w-8 text-primary" />
-                            <span className="font-bold">Print Application</span>
+                    <Card className="shadow-2xl">
+                        <CardHeader className="bg-slate-100 dark:bg-slate-800 flex flex-row justify-between items-center">
+                            <CardTitle className="text-sm uppercase tracking-wider text-muted-foreground flex gap-2 items-center">
+                                <FileText className="h-4 w-4" /> Legal Preview
+                            </CardTitle>
+                            <Button variant="outline" size="sm" onClick={() => setGenerated(false)}>Edit</Button>
+                        </CardHeader>
+                        <CardContent className="p-12 bg-white text-slate-900 font-serif text-sm leading-relaxed min-h-[500px] shadow-inner">
+                            <div className="max-w-2xl mx-auto space-y-6">
+                                <p className="font-bold text-center text-xl underline mb-8">{t.firDrafter.preview.header}</p>
+
+                                <div>
+                                    <p>{t.firDrafter.preview.to}</p>
+                                    <p>{t.firDrafter.preview.sho}</p>
+                                    <p>Cyber Crime Police Station,</p>
+                                    <p>{formData.city || "[City]"}</p>
+                                </div>
+
+                                <p><strong>{t.firDrafter.preview.subject}</strong></p>
+
+                                <p>Respected Sir/Madam,</p>
+
+                                <div className="space-y-1">
+                                    <p><strong>{t.firDrafter.form.personalTitle}:</strong></p>
+                                    <p>{t.firDrafter.form.name}: {formData.name}</p>
+                                    <p>{t.firDrafter.form.address}: {formData.address}</p>
+                                </div>
+
+                                <p>{t.firDrafter.preview.bodyStart}</p>
+
+                                <div className="space-y-1">
+                                    <p><strong>{t.firDrafter.form.incidentTitle}:</strong></p>
+                                    <p>{t.firDrafter.form.date}: {formData.incidentDate}</p>
+                                    <p>{t.firDrafter.form.time}: {formData.incidentTime}</p>
+                                    <p>{t.firDrafter.form.amount}: {formData.amount}</p>
+                                    <p>{t.firDrafter.form.type}: {t.firDrafter.types[formData.type as keyof typeof t.firDrafter.types]}</p>
+                                    <p>{t.firDrafter.form.suspect}: {formData.suspect}</p>
+                                </div>
+
+                                <p className="mt-4">
+                                    <strong>{t.firDrafter.form.desc}:</strong><br />
+                                    {formData.desc}
+                                </p>
+
+                                <div className="bg-slate-50 border-l-4 border-slate-900 p-4 my-6 italic">
+                                    {t.firDrafter.preview.legalCite}
+                                </div>
+
+                                <p>{t.firDrafter.preview.request}</p>
+
+                                <div className="mt-12">
+                                    <p>Sincerely,</p>
+                                    <br />
+                                    <p className="font-bold">{formData.name || "[Signature]"}</p>
+                                    <p>Date: {new Date().toLocaleDateString()}</p>
+                                </div>
+                            </div>
+                        </CardContent>
+                    </Card>
+
+                    <div className="grid grid-cols-2 gap-4">
+                        <Button variant="outline" className="h-16" onClick={() => window.print()}>
+                            <Printer className="mr-2" /> {t.firDrafter.buttons.print}
                         </Button>
-                        <Button className="h-24 flex flex-col gap-2 bg-primary text-white hover:bg-primary/90">
-                            <Download className="h-8 w-8" />
-                            <span className="font-bold">Download PDF</span>
+                        <Button className="h-16 bg-blue-600 hover:bg-blue-700">
+                            <Download className="mr-2" /> {t.firDrafter.buttons.download}
                         </Button>
                     </div>
-
-                    <Card>
-                        <CardHeader>
-                            <CardTitle className="text-sm uppercase tracking-wider text-muted-foreground">Preview</CardTitle>
-                        </CardHeader>
-                        <CardContent className="p-8 bg-white border font-serif text-sm leading-relaxed text-slate-800 shadow-inner h-[400px] overflow-y-auto">
-                            <p className="font-bold text-center mb-4">APPLICATION FOR REGISTRATION OF F.I.R</p>
-                            <p>To,<br />The Station House Officer,<br />Cyber Crime Police Station,<br />[City Name]</p>
-                            <br />
-                            <p><strong>Subject:</strong> Complaint regarding Financial Fraud under Section 318 of BNS 2023.</p>
-                            <br />
-                            <p>Respected Sir/Madam,</p>
-                            <p>I, [Name], resident of [Address], wish to report a cybercrime incident.</p>
-                            <p>On [Date], I received a fraudulent communication...</p>
-                            <br />
-                            <p className="bg-yellow-100 p-1"><strong>Legal Reference:</strong> The act committed falls under Section 66D (Cheating by personation using computer resource) of the Information Technology Act, 2000.</p>
-                            <br />
-                            <p>I request you to register an FIR and take necessary action to freeze the beneficiary account.</p>
-                            <br />
-                            <p>Sincerely,<br />[Name]</p>
-                        </CardContent>
-                    </Card>
                 </div>
             )}
         </div>

@@ -6,7 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Input } from "@/components/ui/input"
 import { Lock, Unlock, FileText, Image as ImageIcon, Music, Trash2, ShieldAlert, LogOut, Plus } from "lucide-react"
 
-export default function SafetyVaultPage() {
+export function SafetyVault() {
     const [isLocked, setIsLocked] = useState(true)
     const [pin, setPin] = useState("")
     const [mode, setMode] = useState<'locked' | 'vault' | 'duress'>('locked')
@@ -89,7 +89,7 @@ export default function SafetyVaultPage() {
     const CalculatorApp = () => {
         const [display, setDisplay] = useState("0")
         return (
-            <div className="flex flex-col h-screen bg-slate-900 text-white p-4">
+            <div className="flex flex-col h-[500px] bg-slate-900 text-white p-4 rounded-xl">
                 <div className="flex-1 flex items-end justify-end p-6 text-5xl font-light font-mono break-all">
                     {display}
                 </div>
@@ -117,7 +117,7 @@ export default function SafetyVaultPage() {
     // --- LOCK SCREEN ---
     if (isLocked) {
         return (
-            <div className="min-h-screen bg-slate-950 flex items-center justify-center p-4">
+            <div className="flex items-center justify-center p-8 bg-slate-950/50 rounded-xl border border-slate-800">
                 <Card className="w-full max-w-sm bg-slate-900 border-slate-800 shadow-2xl">
                     <CardHeader className="text-center pb-2">
                         <div className="mx-auto bg-slate-800 p-4 rounded-full mb-4 w-20 h-20 flex items-center justify-center border border-slate-700">
@@ -176,9 +176,9 @@ export default function SafetyVaultPage() {
 
     // --- REAL VAULT MODE ---
     return (
-        <div className="min-h-screen bg-slate-50 dark:bg-slate-950 p-4 sm:p-6 lg:p-8">
+        <div className="bg-slate-50 dark:bg-slate-950 p-4 sm:p-6 lg:p-8 rounded-xl border border-slate-800">
             <div className="max-w-4xl mx-auto space-y-6">
-                <div className="flex items-center justify-between bg-white dark:bg-slate-900 p-4 rounded-xl shadow-sm border">
+                <div className="flex items-center justify-between bg-white dark:bg-slate-900 p-4 rounded-xl shadow-sm border border-slate-800">
                     <div>
                         <h1 className="text-2xl font-bold flex items-center gap-2">
                             <ShieldAlert className="text-blue-600 h-6 w-6" /> Safety Vault
@@ -251,8 +251,8 @@ export default function SafetyVaultPage() {
                                             </div>
                                         ) : (
                                             <div className={`h-16 w-16 rounded-lg flex items-center justify-center shrink-0 ${file.type === 'document' ? 'bg-orange-100 text-orange-600' :
-                                                    file.type === 'audio' ? 'bg-purple-100 text-purple-600' :
-                                                        'bg-blue-100 text-blue-600'
+                                                file.type === 'audio' ? 'bg-purple-100 text-purple-600' :
+                                                    'bg-blue-100 text-blue-600'
                                                 }`}>
                                                 {file.type === 'document' && <FileText className="h-8 w-8" />}
                                                 {file.type === 'audio' && <Music className="h-8 w-8" />}

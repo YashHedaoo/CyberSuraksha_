@@ -5,112 +5,58 @@
 }
 
 :root {
-  /* THEME: TRUST & CLARITY (Default Light) */
-  /* Clean, official, and high-contrast for readability */
+  /* ANTI-GRAVITY PROTOCOL: NATIONAL COMMAND INTERFACE (Permanent Dark Mode) */
 
-  --background: 210 40% 98%;
-  /* Slate 50 - Soft White */
-  --foreground: 222 47% 11%;
-  /* Slate 900 - Deep Navy/Black */
-
-  --card: 0 0% 100%;
-  /* White */
-  --card-foreground: 222 47% 11%;
-
-  --popover: 0 0% 100%;
-  --popover-foreground: 222 47% 11%;
-
-  /* Primary: Trust Blue (Standard Web Accessible) */
-  --primary: 221 83% 53%;
-  /* #2563EB - Blue 600 */
-  --primary-foreground: 210 40% 98%;
-
-  /* Secondary: Subtle Slate */
-  --secondary: 210 40% 96.1%;
-  /* Slate 100 */
-  --secondary-foreground: 222 47% 11%;
-
-  /* Muted: For disabled or subtle text */
-  --muted: 210 40% 96.1%;
-  --muted-foreground: 215.4 16.3% 46.9%;
-  /* Slate 500 */
-
-  /* Accent: Sky Blue (For highlights/active states) */
-  --accent: 199 89% 48%;
-  /* Sky 500 */
-  --accent-foreground: 210 40% 98%;
-
-  /* Destructive: Clear Red */
-  --destructive: 0 84.2% 60.2%;
-  /* Red 500 */
-  --destructive-foreground: 210 40% 98%;
-
-  /* Borders & Inputs */
-  --border: 214.3 31.8% 91.4%;
-  /* Slate 200 */
-  --input: 214.3 31.8% 91.4%;
-  --ring: 221 83% 53%;
-  /* Primary Blue Ring */
-
-  --radius: 0.75rem;
-  /* 12px Rounded - Friendly */
-}
-
-/* Police Theme Overrides - Stricter, Darker Blue */
-.police-theme {
-  --primary: 224 64% 33%;
-  /* #1e3a8a - Blue 900 (Deep Navy) */
-  --primary-foreground: 210 40% 98%;
-
-  --accent: 201 96% 32%;
-  /* #0284c7 - Sky 700 */
-  --accent-foreground: 210 40% 98%;
-
-  /* Sharper UI for Authority */
-  --radius: 0.25rem;
-  /* 4px */
-}
-
-.dark {
-  /* DARK MODE: MODERN & SLEEQ (Not pitch black, but rich slate) */
-
+  /* Base Backgrounds - Deep Slate/Black */
   --background: 222 47% 11%;
   /* Slate 900 */
   --foreground: 210 40% 98%;
   /* Slate 50 */
 
-  --card: 217 33% 17%;
-  /* Slate 800 */
+  /* Surfaces */
+  --card: 222 47% 11%;
   --card-foreground: 210 40% 98%;
 
   --popover: 222 47% 11%;
   --popover-foreground: 210 40% 98%;
 
-  /* Dark Mode Primary is lighter for contrast */
+  /* Primary: Police Blue (Authoritative) */
   --primary: 217 91% 60%;
-  /* Blue 500 */
+  /* Blue 500 - High Visibility on Dark */
   --primary-foreground: 222 47% 11%;
 
+  /* Secondary: Muted Slate */
   --secondary: 217 33% 17%;
   /* Slate 800 */
   --secondary-foreground: 210 40% 98%;
 
+  /* Muted */
   --muted: 217 33% 17%;
   --muted-foreground: 215 20.2% 65.1%;
-  /* Slate 400 */
 
+  /* Accent: Emergency/Action */
   --accent: 199 89% 48%;
-  /* Sky 500 (Keeps punch) */
-  --accent-foreground: 0 0% 100%;
+  /* Sky 500 */
+  --accent-foreground: 210 40% 98%;
 
+  /* Destructive: Alarm Red */
   --destructive: 0 62.8% 30.6%;
-  /* Red 900 (Muted Red Background) */
   --destructive-foreground: 210 40% 98%;
 
+  /* Borders & Inputs */
   --border: 217 33% 17%;
-  /* Slate 800 */
   --input: 217 33% 17%;
   --ring: 224 76% 48%;
+
+  --radius: 0.5rem;
+  /* Professional rounded corners */
+}
+
+/* Remove separate .dark block as we are enforcing default dark */
+.police-theme {
+  --primary: 224 64% 33%;
+  --primary-foreground: 210 40% 98%;
+  --radius: 0.25rem;
 }
 
 body {
@@ -173,4 +119,34 @@ body {
 
 ::-webkit-scrollbar-thumb:hover {
   @apply bg-slate-400 dark:bg-slate-600;
+}
+
+/* ANTI-GRAVITY INTERACTION UPGRADE */
+.cyber-interactive {
+  transition: all 300ms ease-out;
+  cursor: pointer;
+}
+
+.cyber-interactive:hover {
+  transform: scale(1.03);
+  box-shadow: 0 0 15px rgba(59, 130, 246, 0.4);
+  z-index: 10;
+  outline: 1px solid rgba(59, 130, 246, 0.5);
+}
+
+.cyber-interactive:focus-visible {
+  transform: scale(1.03);
+  box-shadow: 0 0 20px rgba(59, 130, 246, 0.6);
+  outline: 2px solid rgb(59, 130, 246);
+}
+
+/* Specific Glow Colors */
+.cyber-glow-green:hover {
+  box-shadow: 0 0 15px rgba(34, 197, 94, 0.4);
+  outline-color: rgba(34, 197, 94, 0.5);
+}
+
+.cyber-glow-amber:hover {
+  box-shadow: 0 0 15px rgba(245, 158, 11, 0.4);
+  outline-color: rgba(245, 158, 11, 0.5);
 }

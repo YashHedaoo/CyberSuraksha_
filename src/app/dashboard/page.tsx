@@ -15,6 +15,14 @@ import { ZeroFirCard } from "@/components/zero-fir-card"
 
 import { LiveAlertTicker } from "@/components/live-alert-ticker"
 import { CyberLicenseWidget } from "@/components/cyber-license-widget"
+import { SafetyVault } from "@/components/dashboard/safety-vault"
+import { VoiceRecorder } from "@/components/media/voice-recorder"
+import { VideoRecorder } from "@/components/media/video-recorder"
+import { SilentModeToggle, SilentModeView } from "@/components/dashboard/silent-mode-toggle"
+import { AiScannerWidget } from "@/components/dashboard/ai-scanner-widget"
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
+import { Video, Mic, EyeOff, Bot } from "lucide-react"
+import { LegalShortcutsWidget } from "@/components/dashboard/legal-shortcuts"
 
 export default function DashboardPage() {
   const { user } = useAuth()
@@ -26,13 +34,16 @@ export default function DashboardPage() {
   const [privacyMode, setPrivacyMode] = useState(false)
 
   // AI Tool State
-  const [aiText, setAiText] = useState("")
-  const [aiResult, setAiResult] = useState<{ score: string, risk: string, suggestions: string[] } | null>(null)
-  const [analyzing, setAnalyzing] = useState(false)
+  // const [aiText, setAiText] = useState("") <-- REMOVED: Managed internally by AiScannerWidget
+  // const [aiResult, setAiResult] = useState... <-- REMOVED
+  // const [analyzing, setAnalyzing] = useState(false) <-- REMOVED
 
   // SOS State
   const [sosActive, setSosActive] = useState(false)
   const [countdown, setCountdown] = useState(5)
+
+  // Silent Mode State - Merged from User Dashboard
+  const [isSilent, setIsSilent] = useState(false)
 
   useEffect(() => {
     let interval: NodeJS.Timeout
@@ -63,31 +74,7 @@ export default function DashboardPage() {
     }
   }, [user])
 
-  const handleAnalyze = () => {
-    if (!aiText) return
-    setAnalyzing(true)
-    setTimeout(() => {
-      const isFraud = aiText.toLowerCase().includes("lottery") || aiText.toLowerCase().includes("bank") || aiText.toLowerCase().includes("otp") || aiText.toLowerCase().includes("kyc")
-
-      const suggestions = isFraud ? [
-        "Do NOT share any OTP or PIN.",
-        "Block the sender immediately.",
-        "Contact your bank's official fraud helpline.",
-        "Report to CyberCrime (1930)."
-      ] : [
-        "Verify the sender's identity independently.",
-        "Do not click on suspicious links.",
-        "Monitor your account for unusual activity."
-      ]
-
-      setAiResult({
-        score: isFraud ? "98.2%" : "12.4%",
-        risk: isFraud ? "High Risk" : "Safe",
-        suggestions
-      })
-      setAnalyzing(false)
-    }, 1500)
-  }
+  // handleAnalyze Removed - Logic moved to AiScannerWidget
 
   const handleSOS = () => {
     setSosActive(true)
@@ -97,6 +84,10 @@ export default function DashboardPage() {
   const cancelSOS = () => {
     setSosActive(false)
     setCountdown(5)
+  }
+
+  if (isSilent) {
+    return <SilentModeView onExit={() => setIsSilent(false)} />
   }
 
   return (
@@ -142,6 +133,8 @@ export default function DashboardPage() {
                 {t.dashboard.newComplaint}
               </Link>
             </Button>
+            {/* Silent Mode Toggle from User Dashboard */}
+            <SilentModeToggle isSilent={isSilent} onToggle={() => setIsSilent(!isSilent)} />
           </div>
         </div>
 
@@ -193,6 +186,73 @@ export default function DashboardPage() {
             <p className="text-xs text-muted-foreground mt-1">Monthly Digest</p>
           </CardContent>
         </Card>
+      </div>
+
+      {/* NEW SECTION: Digital Forensics & Safety (Merged from User Dashboard) */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {/* Safety Vault Card */}
+        <Card className="glassy border-l-4 border-l-emerald-500">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Shield className="h-5 w-5 text-emerald-600" />
+              {(t.widgets as any)?.vault || "Secure Vault"}
+            </CardTitle>
+            <CardDescription>Encrypted storage for sensitive evidence</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <SafetyVault userId={user?.id} />
+          </CardContent>
+        </Card>
+
+        {/* Evidence Recorder Card */}
+        <Card className="glassy border-l-4 border-l-blue-500">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Video className="h-5 w-5 text-blue-600" />
+              Evidence Recorder
+            </CardTitle>
+            <CardDescription>Record video or audio statements securely</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="grid grid-cols-2 gap-4">
+              <Dialog>
+                <DialogTrigger asChild>
+                  <Button variant="outline" className="h-24 flex flex-col gap-2 hover:bg-blue-50 dark:hover:bg-blue-900/20 border-blue-200 dark:border-blue-800">
+                    <Video className="h-8 w-8 text-blue-600" />
+                    <span>Record Video</span>
+                  </Button>
+                </DialogTrigger>
+                <DialogContent className="sm:max-w-xl">
+                  <DialogHeader>
+                    <DialogTitle>Video Evidence Recorder</DialogTitle>
+                  </DialogHeader>
+                  <VideoRecorder userId={user?.id} />
+                </DialogContent>
+              </Dialog>
+
+              <Dialog>
+                <DialogTrigger asChild>
+                  <Button variant="outline" className="h-24 flex flex-col gap-2 hover:bg-red-50 dark:hover:bg-red-900/20 border-red-200 dark:border-red-800">
+                    <Mic className="h-8 w-8 text-red-600" />
+                    <span>Record Audio</span>
+                  </Button>
+                </DialogTrigger>
+                <DialogContent className="sm:max-w-md">
+                  <DialogHeader>
+                    <DialogTitle>Voice Statement Recorder</DialogTitle>
+                  </DialogHeader>
+                  <VoiceRecorder userId={user?.id} />
+                </DialogContent>
+              </Dialog>
+            </div>
+            <p className="text-xs text-muted-foreground text-center">
+              All recordings are locally encrypted and timestamped automatically.
+            </p>
+          </CardContent>
+        </Card>
+
+        {/* Legal Shortcuts Widget */}
+        <LegalShortcutsWidget />
       </div>
 
       {/* Recent Activity */}
@@ -261,47 +321,14 @@ export default function DashboardPage() {
           <Card className="glassy">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
-                <Shield className="h-5 w-5 text-primary" />
-                {t.dashboard.aiTool}
+                <Bot className="h-5 w-5 text-primary" />
+                {t.dashboard.aiTool || "CyberSuraksha Vision AI"}
               </CardTitle>
-              <CardDescription>{t.dashboard.aiDesc}</CardDescription>
+              <CardDescription>{t.dashboard.aiDesc || "Analyze suspicions texts or Upload Screenshots (OCR)."}</CardDescription>
             </CardHeader>
             <CardContent className="grid gap-4">
-              <div className="bg-primary/5 p-4 rounded-lg space-y-3 dark:bg-primary/10">
-                <textarea
-                  className="w-full text-xs p-2 rounded border bg-background text-foreground min-h-[80px]"
-                  placeholder="Paste suspicious text here (e.g. 'You won a lottery, send bank details')..."
-                  value={aiText}
-                  onChange={(e) => setAiText(e.target.value)}
-                />
-
-                {aiResult && (
-                  <div className="space-y-3">
-                    <div className={`text-xs p-2 rounded font-bold text-center ${aiResult.risk === 'High Risk' ? 'bg-red-100 text-red-700' : 'bg-green-100 text-green-700'}`}>
-                      {aiResult.risk} detected (Confidence: {aiResult.score})
-                    </div>
-
-                    <div className="bg-background/50 p-2 rounded border">
-                      <p className="text-xs font-semibold mb-1">AI Suggestions:</p>
-                      <ul className="text-xs space-y-1 text-muted-foreground list-disc pl-4">
-                        {aiResult.suggestions.map((s, i) => (
-                          <li key={i}>{s}</li>
-                        ))}
-                      </ul>
-                    </div>
-                  </div>
-                )}
-
-                <Button
-                  size="sm"
-                  variant="secondary"
-                  className="w-full text-xs"
-                  onClick={handleAnalyze}
-                  disabled={analyzing}
-                >
-                  {analyzing ? t.common.loading : t.dashboard.analyze}
-                </Button>
-              </div>
+              {/* New AI Scanner Widget */}
+              <AiScannerWidget />
 
               <div className="border rounded-lg p-4 space-y-2 bg-background/50">
                 <div className="font-semibold text-sm">{t.dashboard.emergency}</div>

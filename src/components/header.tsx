@@ -10,13 +10,15 @@ import { LanguageToggle } from "@/components/language-toggle"
 import { useLanguage } from "@/context/language-context"
 
 import { useSeniorMode } from "@/context/senior-mode-context"
-import { Accessibility } from "lucide-react"
+import { Accessibility, Trophy } from "lucide-react"
+import { useLevel } from "@/context/level-context"
 
 export function Header() {
   const [isOpen, setIsOpen] = useState(false)
   const router = useRouter()
   const { isSeniorMode, toggleSeniorMode } = useSeniorMode()
   const { t } = useLanguage()
+  const { rank, level, xp, nextLevelXp } = useLevel()
 
   const navigation = [
     { name: t.nav.home, href: "/" },
@@ -24,7 +26,7 @@ export function Header() {
     { name: t.nav.verify, href: "/verify" },
     { name: t.nav.legalAid, href: "/legal-aid" },
     { name: t.nav.quiz, href: "/quiz" },
-    { name: t.nav.safety, href: "/safety" },
+    { name: t.nav.safety, href: "/safety-resources" },
   ]
 
   return (
@@ -58,36 +60,20 @@ export function Header() {
                   {item.name}
                 </Link>
               ))}
+              <Link
+                href="/profile"
+                className="text-sm font-medium text-yellow-500 hover:text-yellow-400 transition-colors animate-pulse"
+              >
+                My Profile
+              </Link>
+
             </nav>
           )}
 
           {/* Emergency Button & Auth */}
           <div className="flex items-center space-x-4">
 
-            {/* Notification Bell */}
-            {!isSeniorMode && (
-              <div
-                onClick={() => router.push("/dashboard/my-complaints")} // Or open a real notification sheet
-                className="relative cursor-pointer hover:bg-muted/50 p-2 rounded-full transition-colors group"
-              >
-                <div className="absolute top-2 right-2 h-2 w-2 bg-red-500 rounded-full animate-pulse ring-2 ring-background" />
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="20"
-                  height="20"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  className="text-muted-foreground group-hover:text-foreground"
-                >
-                  <path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9" />
-                  <path d="M10.3 21a1.94 1.94 0 0 0 3.4 0" />
-                </svg>
-              </div>
-            )}
+            {/* Notification Bell Removed */}
 
             <Button
               onClick={toggleSeniorMode}
@@ -102,15 +88,18 @@ export function Header() {
 
             {!isSeniorMode && <div className="hidden sm:block"><LanguageToggle /></div>}
 
-            <Button
-              variant="outline"
-              size={isSeniorMode ? "lg" : "sm"}
-              className={`${isSeniorMode ? 'bg-red-600 text-white font-black text-xl px-6 py-6 hover:bg-red-700' : 'hidden sm:flex items-center space-x-2 border-emergency text-emergency hover:bg-emergency hover:text-emergency-foreground bg-transparent'}`}
-              onClick={() => (window.location.href = "tel:112")}
-            >
-              <Phone className={isSeniorMode ? "h-6 w-6 mr-2" : "h-4 w-4"} />
-              <span>{isSeniorMode ? "CALL POLICE" : "Emergency: 100"}</span>
-            </Button>
+            {!isSeniorMode && (
+              <div className="hidden lg:flex flex-col items-end mr-4">
+                <div className="text-xs font-bold text-yellow-500 flex items-center gap-1 uppercase tracking-wider">
+                  <Trophy className="h-3 w-3" /> {rank} <span className="text-[10px] text-muted-foreground">(Lvl {level})</span>
+                </div>
+                <div className="w-24 h-1.5 bg-slate-800 rounded-full mt-1 overflow-hidden">
+                  <div className="h-full bg-yellow-400" style={{ width: `${(xp / nextLevelXp) * 100}%` }} />
+                </div>
+              </div>
+            )}
+
+            {/* Emergency Button Removed */}
 
             {/* Mobile Menu */}
             <Sheet open={isOpen} onOpenChange={setIsOpen}>

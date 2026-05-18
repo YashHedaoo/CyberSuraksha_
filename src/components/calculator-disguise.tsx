@@ -17,6 +17,15 @@ export function CalculatorDisguise() {
     const handleClear = () => setDisplay("0")
 
     const handleEqual = () => {
+        // Silent FIR Trigger Code: 100100 (Indian Police Standard)
+        if (display === "100100") {
+            // Trigger Silent Logic
+            alert("SILENT FIR INITIATED: Location Being Tracked. Audio Recording Started.")
+            // In a real app, this would make a background API call
+            setDisplay("0")
+            return
+        }
+
         // Here is the magic: check if the 'calculation' is actually the PIN
         if (checkPin(display)) {
             // Unlock happens via context

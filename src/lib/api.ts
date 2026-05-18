@@ -1,6 +1,7 @@
 import { supabase } from './supabase';
 import { Complaint, User, Role } from './types';
 import { mockApi } from './mockData';
+import { MockDatabaseService } from './mock-db-service';
 
 // Helper to check if Supabase is configured
 const isSupabaseConfigured = () => {
@@ -36,8 +37,8 @@ export const api = {
     // COMPLAINTS
     getComplaints: async (userId?: string, role?: Role): Promise<Complaint[]> => {
         if (!isSupabaseConfigured()) {
-            console.warn("Supabase keys missing. Using Mock Data.");
-            return mockApi.getComplaints(userId, role);
+            // Use Persistent Mock DB instead of static arrays
+            return MockDatabaseService.getComplaints(userId, role);
         }
 
         let query = supabase.from('complaints').select('*').order('created_at', { ascending: false });
@@ -55,7 +56,7 @@ export const api = {
         if (error) {
             console.warn('Supabase fetch failed (likely network or RLS). using mock data:', error.message);
             // Fallback to mock data on error to prevent app crash
-            return mockApi.getComplaints(userId, role);
+            return MockDatabaseService.getComplaints(userId, role);
         }
 
         // Map snake_case DB to camelCase Types
@@ -80,7 +81,7 @@ export const api = {
 
     createComplaint: async (complaint: Omit<Complaint, 'id' | 'createdAt' | 'status'>, userId: string): Promise<Complaint | null> => {
         if (!isSupabaseConfigured()) {
-            return mockApi.createComplaint(complaint);
+            return MockDatabaseService.createComplaint(complaint, userId);
         }
 
         const isAnonymous = userId === 'anonymous';
@@ -123,7 +124,7 @@ export const api = {
 
     updateStatus: async (id: string, status: string): Promise<void> => {
         if (!isSupabaseConfigured()) {
-            return mockApi.updateStatus(id, status as Complaint['status']); // MockAPI expects exact type
+            return MockDatabaseService.updateStatus(id, status);
         }
 
         const { error } = await supabase

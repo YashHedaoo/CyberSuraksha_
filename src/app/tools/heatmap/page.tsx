@@ -5,6 +5,7 @@ import { Badge } from "@/components/ui/badge"
 import { MapPin, AlertTriangle, TrendingUp } from "lucide-react"
 
 import { useLanguage } from "@/context/language-context"
+import { LiveThreatMap } from "@/components/live-threat-map"
 
 export default function HeatmapPage() {
     const { t } = useLanguage()
@@ -25,37 +26,10 @@ export default function HeatmapPage() {
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 {/* Map Placeholder */}
-                <Card className="lg:col-span-2 min-h-[500px] relative overflow-hidden bg-slate-100 dark:bg-slate-900 border-2 border-slate-200">
-                    <div className="absolute inset-0 flex items-center justify-center opacity-20">
-                        {/* Mock India Map Background would go here */}
-                        <span className="text-9xl font-black text-slate-300 select-none">INDIA MAP</span>
-                    </div>
-
-                    {/* Hotspots */}
-                    <div className="absolute top-[30%] left-[25%] group cursor-pointer">
-                        <div className="h-6 w-6 bg-red-500/50 rounded-full animate-ping absolute" />
-                        <div className="h-6 w-6 bg-red-600 rounded-full border-2 border-white flex items-center justify-center text-[10px] text-white font-bold relative z-10">42</div>
-                        <div className="hidden group-hover:block absolute bottom-8 left-1/2 -translate-x-1/2 bg-black text-white text-xs p-2 rounded whitespace-nowrap z-20">
-                            Delhi NCR: 42 Phishing Cases (1hr)
-                        </div>
-                    </div>
-
-                    <div className="absolute top-[60%] left-[30%] group cursor-pointer">
-                        <div className="h-4 w-4 bg-orange-500/50 rounded-full animate-ping absolute" />
-                        <div className="h-4 w-4 bg-orange-500 rounded-full border-2 border-white relative z-10" />
-                        <div className="hidden group-hover:block absolute bottom-6 left-1/2 -translate-x-1/2 bg-black text-white text-xs p-2 rounded whitespace-nowrap z-20">
-                            Mumbai: 12 Credit Card Frauds
-                        </div>
-                    </div>
-
-                    <div className="absolute top-[40%] right-[20%] group cursor-pointer">
-                        <div className="h-8 w-8 bg-red-600/50 rounded-full animate-ping absolute" />
-                        <div className="h-8 w-8 bg-red-700 rounded-full border-2 border-white flex items-center justify-center text-[10px] text-white font-bold relative z-10">89</div>
-                        <div className="hidden group-hover:block absolute bottom-10 left-1/2 -translate-x-1/2 bg-black text-white text-xs p-2 rounded whitespace-nowrap z-20">
-                            Jamtara Region: High Alert
-                        </div>
-                    </div>
-                </Card>
+                {/* Live Radar Map */}
+                <div className="lg:col-span-2">
+                    <LiveThreatMap />
+                </div>
 
                 {/* Stats Panel */}
                 <div className="space-y-6">

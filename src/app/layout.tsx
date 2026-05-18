@@ -7,6 +7,7 @@ import { LanguageProvider } from "@/context/language-context"
 import { ThemeProvider } from "@/context/theme-context"
 import { SeniorModeProvider } from "@/context/senior-mode-context"
 import { DisguiseProvider } from "@/context/disguise-context"
+import { LevelProvider } from "@/context/level-context"
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" })
 
@@ -22,14 +23,16 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="en" className="dark" suppressHydrationWarning>
       <body className={`${inter.variable} font-sans`} suppressHydrationWarning>
         <ThemeProvider>
           <LanguageProvider>
             <AuthProvider>
               <SeniorModeProvider>
                 <DisguiseProvider>
-                  {children}
+                  <LevelProvider>
+                    {children}
+                  </LevelProvider>
                 </DisguiseProvider>
               </SeniorModeProvider>
             </AuthProvider>

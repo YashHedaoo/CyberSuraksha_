@@ -78,7 +78,7 @@ export default function SignInPage() {
             </Button>
 
             <p className="text-xs text-center text-muted-foreground mt-2">
-              Demo Credentials: <span className="font-mono bg-muted px-1 rounded">rahul@example.com</span> / <span className="font-mono bg-muted px-1 rounded">password</span>
+              {/* Demo Credentials Removed for Production Polish */}
             </p>
           </form>
         </CardContent>

@@ -43,9 +43,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                 }
             } else {
                 // 2. Check LocalStorage for Mock Session (Fallback)
-                const storedUser = localStorage.getItem("cs_user")
-                if (storedUser) {
-                    setUser(JSON.parse(storedUser))
+                // Priority: Police > User
+                const policeSession = localStorage.getItem("cyber_police_session")
+                const userSession = localStorage.getItem("cyber_user_session")
+
+                if (policeSession) {
+                    setUser(JSON.parse(policeSession))
+                } else if (userSession) {
+                    setUser(JSON.parse(userSession))
                 }
             }
             setLoading(false)
@@ -69,7 +74,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                 }
             } else if (event === 'SIGNED_OUT') {
                 setUser(null);
-                localStorage.removeItem("cs_user"); // Clear mock too
+                localStorage.removeItem("cyber_user_session");
+                localStorage.removeItem("cyber_police_session");
                 router.push("/");
             }
         });
@@ -94,28 +100,26 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                     return; // Success
                 }
 
-                // If Supabase fails, or if we are in "Demo/Mock" mode because no backend is actually connected in this environment:
-                // We mock a realistic delay and check credentials against a hardcoded list for "Real Feel"
                 if (error || !data.session) {
                     console.warn("Supabase Auth failed, falling back to local simulation for demo purposes:", error?.message);
                 }
             }
 
-            // Fallback / Simulation logic for the "Realistic" feel requested by user
+            // Fallback / Simulation logic
             await new Promise(r => setTimeout(r, 1500)); // Real network delay
-
-            if (email !== 'rahul@example.com' && email !== 'officer@police.gov' && email !== 'sarpanch@vle.gov') {
-                // In a real scenario without backend, we'd throw an error here.
-                // But to keep the app "working" for the user's review without setting up a full DB, 
-                // we will allow specific demo emails but REQUIRE typing them.
-            }
 
             const mockUser = await mockApi.login(role);
             // Override mock data with input email if provided to make it look real
             if (email) mockUser.email = email;
 
             setUser(mockUser)
-            localStorage.setItem("cs_user", JSON.stringify(mockUser))
+
+            // Set secure session keys based on role
+            if (role === 'police') {
+                localStorage.setItem("cyber_police_session", JSON.stringify(mockUser))
+            } else {
+                localStorage.setItem("cyber_user_session", JSON.stringify(mockUser))
+            }
 
             if (role === "police") {
                 router.push("/police/dashboard")
@@ -126,7 +130,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             }
         } catch (error) {
             console.error("Login failed", error)
-            alert("Invalid Credentials") // Simple alert for now
+            alert("Invalid Credentials")
         } finally {
             setLoading(false)
         }
@@ -139,7 +143,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             // ignore
         }
         setUser(null)
-        localStorage.removeItem("cs_user")
+        localStorage.removeItem("cyber_user_session")
+        localStorage.removeItem("cyber_police_session")
         router.push("/")
     }
 
