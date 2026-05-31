@@ -6,7 +6,7 @@ pipeline {
     }
 
     environment {
-        DOCKER_HUB_REPO    = "yashhedaoof5/cybersuraksha:v1"
+        DOCKER_HUB_REPO    = "yashhedaoof5/cybersuraksha"
         DOCKER_CREDENTIALS = "dockerhub-credentials"
     }
 

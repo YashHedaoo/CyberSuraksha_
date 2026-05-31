@@ -37,12 +37,7 @@ Dockerfile
 docker-compose*.yml
 
 # # Build
-docker build \
-  --build-arg NEXT_PUBLIC_SUPABASE_URL=https://wfielecjovqbzbpwmqdu.supabase.co \
-  --build-arg NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndmaWVsZWNqb3ZxYnpicHdtcWR1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODAxMzU4NjQsImV4cCI6MjA5NTcxMTg2NH0.qvW6UkQ0e9DW_0ju53dkg9ObIB6WScxPJ6V5qW1xOX0 \
-  -t cybersuraksha:latest .
+# docker build --build-arg NEXT_PUBLIC_SUPABASE_URL=https://wfielecjovqbzbpwmqdu.supabase.co --build-arg NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndmaWVsZWNqb3ZxYnpicHdtcWR1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODAxMzU4NjQsImV4cCI6MjA5NTcxMTg2NH0.qvW6UkQ0e9DW_0ju53dkg9ObIB6WScxPJ6V5qW1xOX0 -t cybersuraksha:latest .
 
 # Run
-docker run -p 3000:3000 \
-  -e SUPABASE_SERVICE_ROLE_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndmaWVsZWNqb3ZxYnpicHdtcWR1Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc4MDEzNTg2NCwiZXhwIjoyMDk1NzExODY0fQ.IJMqosAoajLgmh1Y2PHoVNIaU6vEcGZtiGDn4WjpdtQ \
-  cybersuraksha:latest 
+# docker run -p 3000:3000 -e SUPABASE_SERVICE_ROLE_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndmaWVsZWNqb3ZxYnpicHdtcWR1Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc4MDEzNTg2NCwiZXhwIjoyMDk1NzExODY0fQ.IJMqosAoajLgmh1Y2PHoVNIaU6vEcGZtiGDn4WjpdtQ cybersuraksha:latest 
