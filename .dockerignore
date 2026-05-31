@@ -45,4 +45,4 @@ docker build \
 # Run
 docker run -p 3000:3000 \
   -e SUPABASE_SERVICE_ROLE_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndmaWVsZWNqb3ZxYnpicHdtcWR1Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc4MDEzNTg2NCwiZXhwIjoyMDk1NzExODY0fQ.IJMqosAoajLgmh1Y2PHoVNIaU6vEcGZtiGDn4WjpdtQ \
-  cybersuraksha:latest
+  cybersuraksha:latest 
