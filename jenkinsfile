@@ -2,13 +2,12 @@ pipeline {
     agent any
 
     tools {
-        nodejs 'nodejs'
+        nodejs 'NodeJS-20'
     }
 
     environment {
         DOCKER_HUB_REPO    = "yashhedaoof5/cybersuraksha"
         DOCKER_CREDENTIALS = "dockerhub-credentials"
-        PATH               = "/usr/local/bin:/opt/homebrew/bin:/usr/bin:/bin:${/usr/local/bin/docker}"
     }
 
     stages {
@@ -21,28 +20,32 @@ pipeline {
 
         stage('Build Docker Image') {
             steps {
-                withCredentials([
-                    string(credentialsId: 'SUPABASE_URL',      variable: 'SUPABASE_URL'),
-                    string(credentialsId: 'SUPABASE_ANON_KEY', variable: 'SUPABASE_ANON_KEY')
-                ]) {
-                    sh '''
-                        docker build \
-                            --build-arg NEXT_PUBLIC_SUPABASE_URL=$SUPABASE_URL \
-                            --build-arg NEXT_PUBLIC_SUPABASE_ANON_KEY=$SUPABASE_ANON_KEY \
-                            -t $DOCKER_HUB_REPO:latest \
-                            .
-                    '''
+                withEnv(["PATH=/usr/local/bin:/opt/homebrew/bin:/usr/bin:/bin:${env.PATH}"]) {
+                    withCredentials([
+                        string(credentialsId: 'SUPABASE_URL',      variable: 'SUPABASE_URL'),
+                        string(credentialsId: 'SUPABASE_ANON_KEY', variable: 'SUPABASE_ANON_KEY')
+                    ]) {
+                        sh '''
+                            docker build \
+                                --build-arg NEXT_PUBLIC_SUPABASE_URL=$SUPABASE_URL \
+                                --build-arg NEXT_PUBLIC_SUPABASE_ANON_KEY=$SUPABASE_ANON_KEY \
+                                -t $DOCKER_HUB_REPO:latest \
+                                .
+                        '''
+                    }
                 }
             }
         }
 
         stage('Push to Docker Hub') {
             steps {
-                withDockerRegistry([
-                    credentialsId: env.DOCKER_CREDENTIALS,
-                    url: 'https://index.docker.io/v1/'
-                ]) {
-                    sh 'docker push $DOCKER_HUB_REPO:latest'
+                withEnv(["PATH=/usr/local/bin:/opt/homebrew/bin:/usr/bin:/bin:${env.PATH}"]) {
+                    withDockerRegistry([
+                        credentialsId: 'dockerhub-credentials',
+                        url: 'https://index.docker.io/v1/'
+                    ]) {
+                        sh 'docker push $DOCKER_HUB_REPO:latest'
+                    }
                 }
             }
         }
