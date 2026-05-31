@@ -8,6 +8,7 @@ pipeline {
     environment {
         DOCKER_HUB_REPO    = "yashhedaoof5/cybersuraksha"
         DOCKER_CREDENTIALS = "dockerhub-credentials"
+        PATH               = "/usr/local/bin:/opt/homebrew/bin:/usr/bin:/bin:${/usr/local/bin/docker}"
     }
 
     stages {
