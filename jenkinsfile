@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     tools {
-        nodejs 'nodejs'
+        nodejs 'NodeJS-20'
     }
 
     environment {
@@ -40,11 +40,16 @@ pipeline {
         stage('Push to Docker Hub') {
             steps {
                 withEnv(["PATH=/usr/local/bin:/opt/homebrew/bin:/usr/bin:/bin:${env.PATH}"]) {
-                    withDockerRegistry([
+                    withCredentials([usernamePassword(
                         credentialsId: 'dockerhub-credentials',
-                        url: 'https://index.docker.io/v1/'
-                    ]) {
-                        sh 'docker push $DOCKER_HUB_REPO:latest'
+                        usernameVariable: 'DOCKER_USER',
+                        passwordVariable: 'DOCKER_PASS'
+                    )]) {
+                        sh '''
+                            echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin
+                            docker push $DOCKER_HUB_REPO:latest
+                            docker logout
+                        '''
                     }
                 }
             }
