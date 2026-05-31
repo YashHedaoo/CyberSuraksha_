@@ -24,13 +24,13 @@ pipeline {
                     string(credentialsId: 'SUPABASE_URL',      variable: 'SUPABASE_URL'),
                     string(credentialsId: 'SUPABASE_ANON_KEY', variable: 'SUPABASE_ANON_KEY')
                 ]) {
-                    sh """
+                    sh '''
                         docker build \
-                            --build-arg NEXT_PUBLIC_SUPABASE_URL=\${SUPABASE_URL} \
-                            --build-arg NEXT_PUBLIC_SUPABASE_ANON_KEY=\${SUPABASE_ANON_KEY} \
-                            -t ${DOCKER_HUB_REPO}:latest \
+                            --build-arg NEXT_PUBLIC_SUPABASE_URL=$SUPABASE_URL \
+                            --build-arg NEXT_PUBLIC_SUPABASE_ANON_KEY=$SUPABASE_ANON_KEY \
+                            -t $DOCKER_HUB_REPO:latest \
                             .
-                    """
+                    '''
                 }
             }
         }
@@ -38,10 +38,10 @@ pipeline {
         stage('Push to Docker Hub') {
             steps {
                 withDockerRegistry([
-                    credentialsId: "${DOCKER_CREDENTIALS}",
+                    credentialsId: env.DOCKER_CREDENTIALS,
                     url: 'https://index.docker.io/v1/'
                 ]) {
-                    sh "docker push ${DOCKER_HUB_REPO}:latest"
+                    sh 'docker push $DOCKER_HUB_REPO:latest'
                 }
             }
         }
