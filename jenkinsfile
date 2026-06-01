@@ -8,6 +8,8 @@ pipeline {
     environment {
         DOCKER_HUB_REPO    = "yashhedaoof5/cybersuraksha"
         DOCKER_CREDENTIALS = "dockerhub-credentials"
+        CONTAINER_NAME     = "cybersuraksha"
+        APP_PORT           = "3000"
     }
 
     stages {
@@ -20,38 +22,56 @@ pipeline {
 
         stage('Build Docker Image') {
             steps {
-                withEnv(["PATH=/usr/local/bin:/opt/homebrew/bin:/usr/bin:/bin:${env.PATH}"]) {
-                    withCredentials([
-                        string(credentialsId: 'SUPABASE_URL',      variable: 'SUPABASE_URL'),
-                        string(credentialsId: 'SUPABASE_ANON_KEY', variable: 'SUPABASE_ANON_KEY')
-                    ]) {
-                        sh '''
-                            docker build \
-                                --build-arg NEXT_PUBLIC_SUPABASE_URL=$SUPABASE_URL \
-                                --build-arg NEXT_PUBLIC_SUPABASE_ANON_KEY=$SUPABASE_ANON_KEY \
-                                -t $DOCKER_HUB_REPO:latest \
-                                .
-                        '''
-                    }
+                withCredentials([
+                    string(credentialsId: 'SUPABASE_URL',      variable: 'SUPABASE_URL'),
+                    string(credentialsId: 'SUPABASE_ANON_KEY', variable: 'SUPABASE_ANON_KEY')
+                ]) {
+                    sh '''
+                        docker build \
+                            --build-arg NEXT_PUBLIC_SUPABASE_URL=$SUPABASE_URL \
+                            --build-arg NEXT_PUBLIC_SUPABASE_ANON_KEY=$SUPABASE_ANON_KEY \
+                            -t $DOCKER_HUB_REPO:latest \
+                            .
+                    '''
                 }
             }
         }
 
         stage('Push to Docker Hub') {
             steps {
-                withEnv(["PATH=/usr/local/bin:/opt/homebrew/bin:/usr/bin:/bin:${env.PATH}"]) {
-                    withCredentials([usernamePassword(
-                        credentialsId: 'dockerhub-credentials',
-                        usernameVariable: 'DOCKER_USER',
-                        passwordVariable: 'DOCKER_PASS'
-                    )]) {
-                        sh '''
-                            echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin
-                            docker push $DOCKER_HUB_REPO:latest
-                            docker logout
-                        '''
-                    }
+                withCredentials([usernamePassword(
+                    credentialsId: 'dockerhub-credentials',
+                    usernameVariable: 'DOCKER_USER',
+                    passwordVariable: 'DOCKER_PASS'
+                )]) {
+                    sh '''
+                        echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin
+                        docker push $DOCKER_HUB_REPO:latest
+                        docker logout
+                    '''
                 }
+            }
+        }
+
+        stage('Pull & Deploy') {
+            steps {
+                sh '''
+                    # Pull latest image from Docker Hub
+                    docker pull $DOCKER_HUB_REPO:latest
+
+                    # Stop and remove existing container if running
+                    docker stop $CONTAINER_NAME || true
+                    docker rm   $CONTAINER_NAME || true
+
+                    # Run the new container
+                    docker run -d \
+                        --name $CONTAINER_NAME \
+                        --restart unless-stopped \
+                        -p $APP_PORT:3000 \
+                        $DOCKER_HUB_REPO:latest
+
+                    echo "✅ Container started on port $APP_PORT"
+                '''
             }
         }
 
@@ -59,10 +79,10 @@ pipeline {
 
     post {
         success {
-            echo "✅ Done! Image pushed to Docker Hub."
+            echo "🎉 Deployment complete! App running at http://<EC2-IP>:${APP_PORT}"
         }
         failure {
-            echo "❌ Build failed."
+            echo "❌ Build failed. Check logs above."
         }
     }
 
