@@ -7,7 +7,7 @@ pipeline {
 
     environment {
         DOCKER_HUB_REPO    = "yashhedaoof5/cybersuraksha"
-        DOCKER_CREDENTIALS = "dockerhub-credentials"
+        DOCKER_CREDENTIALS = "docker-credentials"
         CONTAINER_NAME     = "cybersuraksha"
         APP_PORT           = "3000"
     }
